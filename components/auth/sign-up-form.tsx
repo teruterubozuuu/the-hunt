@@ -7,34 +7,34 @@ import { Input } from "../ui/input";
 
 export default function SignUpForm() {
   return (
-    <Card className="w-full max-w-sm border border-primary">
-      <CardHeader className="text-center">
-        <CardTitle className="font-semibold text-lg">Start The Hunt</CardTitle>
+    <Card className="w-full max-w-sm border-2 border-foreground">
+      <CardHeader className="text-center pt-4">
+        <CardTitle className="font-bold text-xl">Start The Hunt</CardTitle>
         <CardDescription>Create an account to get started</CardDescription>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-5">
         <form>
           <FieldSet>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" name="email" placeholder="janedoe@email.com" type="text" required />
+                <Input id="email" name="email" placeholder="janedoe@email.com" type="text" required className="border-2 border-foreground" />
               </Field>
 
               <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
-                <Input id="username" name="username" placeholder="JaneDoe" type="text" required />
+                <Input id="username" name="username" placeholder="JaneDoe" type="text" required className="border-2 border-foreground" />
               </Field>
 
               <Field>
                 <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input id="password" name="password" type="password" required />
+                <Input id="password" name="password" type="password" required  className="border-2 border-foreground"/>
               </Field>
 
               <Field>
-                <Button variant="outline" type="submit" className="cursor-pointer text-foreground border-primary!">Sign up</Button>
+                <Button type="submit" variant="default" className="cursor-pointer">Sign up</Button>
                 <span className="text-center mt-2">Already have an account? {""}
-                  <Link href="/sign-in" className="hover:text-primary underline transition-colors">
+                  <Link href="/sign-in" className="hover:text-foreground/50 underline transition-colors">
                     Sign in here
                   </Link>
                 </span>
