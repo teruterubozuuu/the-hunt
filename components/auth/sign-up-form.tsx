@@ -4,8 +4,81 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { FieldGroup, FieldSet, FieldLabel, Field } from "../ui/field";
 import { Input } from "../ui/input";
+import { useState } from "react";
+import { userSchema } from "@/lib/schema/user-details.schema";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 export default function SignUpForm() {
+  const router = useRouter();
+  const [loading, setIsLoading] = useState(false);
+  const supabase = createClient();
+  
+
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault() // stop page from reloading
+    setIsLoading(true);
+
+    // 1. Pass form element into FormData
+    const formData = new FormData(e.currentTarget);
+
+    // 2. Extract values directly using their name attribute
+    const email = formData.get('email') as string;
+    const username = formData.get('username') as string;
+    const password = formData.get('password') as string;
+
+    // 3. Validate data
+    const formDataObj = {email, username, password};
+    const result = userSchema.safeParse(formDataObj);
+    const errors = result.error?.flatten().fieldErrors;
+
+    if (errors?.email){
+      toast.error(errors.email[0]);
+      setIsLoading(false);
+      return;
+    }
+
+    if (errors?.username){
+      toast.error(errors.username[0]);
+      setIsLoading(false);
+      return;
+    }
+
+    if (errors?.password){
+      toast.error(errors.password[0]);
+      setIsLoading(false);
+      return;
+    } 
+
+
+    // 4. Store credentials in SupabaseAuth
+    try{
+      const { error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            username
+          }
+        }
+      })
+
+      if (error) {
+        toast.error(error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success("Successfully created an account");
+      router.push("/sign-in")
+    } catch (error){
+      console.error("Account creation failed", error);
+      toast.error("An unexpected error occurred.");
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Card className="w-full max-w-sm border-2 border-foreground">
       <CardHeader className="text-center pt-4">
@@ -13,12 +86,12 @@ export default function SignUpForm() {
         <CardDescription>Create an account to get started</CardDescription>
       </CardHeader>
       <CardContent className="p-5">
-        <form>
+        <form onSubmit={handleSubmit}>
           <FieldSet>
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" name="email" placeholder="janedoe@email.com" type="text" required className="border-2 border-foreground" />
+                <Input id="email" name="email" placeholder="janedoe@email.com" type="email" required className="border-2 border-foreground" />
               </Field>
 
               <Field>

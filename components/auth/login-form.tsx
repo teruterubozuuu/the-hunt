@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import {
@@ -9,8 +10,69 @@ import {
 } from "../ui/card";
 import { FieldGroup, FieldSet, FieldLabel, Field } from "../ui/field";
 import { Input } from "../ui/input";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { loginSchema } from "@/lib/schema/user-details.schema";
+import { toast } from "sonner";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginForm() {
+  const router = useRouter();
+  const [loading, setIsLoading] = useState(false);
+  const supabase = createClient();
+
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    // 1. Pass form element into FormData
+    const formData = new FormData(e.currentTarget);
+
+    // 2. Extract values directly using their name attribute;
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    // 3. Validate data
+    const formDataObj = {email, password};
+    const result = loginSchema.safeParse(formDataObj);
+    const errors = result.error?.flatten().fieldErrors;
+
+    if (errors?.email){
+      toast.error(errors.email[0]);
+      setIsLoading(false);
+      return;
+    }
+
+    if (errors?.password){
+      toast.error(errors.password[0]);
+      setIsLoading(false);
+      return;
+    } 
+
+    try{
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      })
+
+      if (error) {
+        toast.error(error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success("Successfully signed in");
+      setIsLoading(false);
+      router.refresh();   
+      router.push("/dashboard");
+    } catch(error){
+      console.error("An unexpected error occurred", error);
+      setIsLoading(false);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Card className="w-full max-w-sm border-2 border-foreground">
       <CardHeader className="text-center pt-4">
@@ -20,7 +82,7 @@ export default function LoginForm() {
         <CardDescription>Sign in to your account</CardDescription>
       </CardHeader>
       <CardContent className="p-5 border-none!">
-        <form>
+        <form onSubmit={handleSubmit}>
           <FieldSet>
             <FieldGroup>
               <Field>
@@ -29,7 +91,7 @@ export default function LoginForm() {
                   id="email"
                   name="email"
                   placeholder="janedoe@email.com"
-                  type="text"
+                  type="email"
                   required
                   className="border-foreground border-2"
                 />

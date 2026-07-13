@@ -13,16 +13,14 @@ import {
 import { MoonIcon, SunIcon } from "@phosphor-icons/react"
 
 export function LightDarkModeToggle() {
-  const { setTheme } = useTheme()
+  const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="cursor-pointer border-2 border-foreground!">
-          <SunIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+      <DropdownMenuTrigger className="relative cursor-pointer border-2 p-2 rounded-lg border-foreground!">
+          <SunIcon className="scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" size={15}/>
+          <MoonIcon className="absolute -translate-y-1/2 top-1/2 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" size={15} />
           <span className="sr-only">Toggle theme</span>
-        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>

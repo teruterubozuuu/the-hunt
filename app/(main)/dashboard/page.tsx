@@ -1,6 +1,8 @@
+import DashboardPage from "@/components/pages/dashboard-page";
+
 export default function Dashboard() {
   return (
-    <div></div>
+    <div><DashboardPage/></div>
   )
 }
 
