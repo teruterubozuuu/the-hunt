@@ -10,12 +10,46 @@ import {
 import {
   BriefcaseIcon,
   ChartDonutIcon,
+  FadersHorizontalIcon,
   ReadCvLogoIcon,
+  SignOutIcon,
   UserCircleIcon,
 } from "@phosphor-icons/react";
 import { LightDarkModeToggle } from "./dark-light-mode";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { useTheme } from "next-themes";
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
+import { useRouter } from "next/navigation";
 
 export default function AppSidebar() {
+      const { setTheme } = useTheme();
+      const supabase = createClient();
+      const router = useRouter();
+
+      const handleSignOut = async() => {
+        try{
+            const {error} = await supabase.auth.signOut();
+            if (error){
+                toast.error("Error signing out")
+                return;
+            }
+            router.push("/sign-in")
+        } catch (error){
+            console.error("An unexpected error occurred", error);
+        }        
+      }
+    
   return (
     <Sidebar
       collapsible="none"
@@ -37,9 +71,36 @@ export default function AppSidebar() {
               <ReadCvLogoIcon size={25} />
             </SidebarMenuItem>
           </div>
-            <SidebarMenuItem className="cursor-pointer" title="Profile">
-              <UserCircleIcon size={25} />
-            </SidebarMenuItem>
+          <SidebarMenuItem title="Profile">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="cursor-pointer">
+                <UserCircleIcon size={25} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="cursor-pointer">
+                    Preferences
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
+                        Light Mode
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
+                        Dark Mode
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
+                        System
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
