@@ -8,14 +8,12 @@ import { useState } from "react";
 import { userSchema } from "@/lib/schema/user-details.schema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/utils/supabase/supabase";
 
 export default function SignUpForm() {
   const router = useRouter();
   const [loading, setIsLoading] = useState(false);
-  const supabase = createClient();
   
-
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault() // stop page from reloading
     setIsLoading(true);
