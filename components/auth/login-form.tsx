@@ -15,13 +15,14 @@ import { useState } from "react";
 import { loginSchema } from "@/lib/schema/user-details.schema";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setIsLoading] = useState(false);
-  const supabase = createClient();
+  const [isChecked, setIsChecked] = useState(false);
 
-  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -29,31 +30,36 @@ export default function LoginForm() {
     const formData = new FormData(e.currentTarget);
 
     // 2. Extract values directly using their name attribute;
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     // 3. Validate data
-    const formDataObj = {email, password};
+    const formDataObj = { email, password };
     const result = loginSchema.safeParse(formDataObj);
     const errors = result.error?.flatten().fieldErrors;
 
-    if (errors?.email){
+    if (errors?.email) {
       toast.error(errors.email[0]);
       setIsLoading(false);
       return;
     }
 
-    if (errors?.password){
+    if (errors?.password) {
       toast.error(errors.password[0]);
       setIsLoading(false);
       return;
-    } 
+    }
 
-    try{
+    try {
+      // Pick storage based on Remember Me
+      const supabase = createClient(
+        isChecked ? window.localStorage : window.sessionStorage,
+      );
+
       const { error } = await supabase.auth.signInWithPassword({
         email: email,
-        password: password
-      })
+        password: password,
+      });
 
       if (error) {
         toast.error(error.message);
@@ -63,15 +69,15 @@ export default function LoginForm() {
 
       toast.success("Successfully signed in");
       setIsLoading(false);
-      router.refresh();   
+      router.refresh();
       router.push("/dashboard");
-    } catch(error){
+    } catch (error) {
       console.error("An unexpected error occurred", error);
       setIsLoading(false);
-    } finally{
+    } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-sm border-2 border-foreground">
@@ -111,10 +117,15 @@ export default function LoginForm() {
               <Field>
                 <div className="flex justify-between items-center">
                   <div className="flex gap-2 items-center">
-                    <Input type="checkbox" className="w-3 cursor-pointer" />
+                    <Input
+                      type="checkbox"
+                      className="w-3 cursor-pointer"
+                      checked={isChecked}
+                      onChange={(e) => setIsChecked(e.target.checked)}
+                    />
                     <span>Remember me</span>
                   </div>
-                  <Link href="#">Forgot password?</Link>
+                  <Link href="/forgot-password" className="hover:text-foreground/50">Forgot password?</Link>
                 </div>
               </Field>
 
@@ -123,8 +134,15 @@ export default function LoginForm() {
                   variant="default"
                   type="submit"
                   className="cursor-pointer"
+                  disabled={loading}
                 >
-                  Sign in
+                  {loading ? (
+                    <>
+                      <CircleNotchIcon className="animate-spin" /> Signing in...
+                    </>
+                  ) : (
+                    "Sign in"
+                  )}
                 </Button>
                 <span className="text-center mt-2">
                   Don't have an account? {""}
