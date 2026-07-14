@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,31 +29,40 @@ import {
 import { useTheme } from "next-themes";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 import { useRouter } from "next/navigation";
+import Loader from "./loader";
 
 export default function AppSidebar() {
-      const { setTheme } = useTheme();
-      const supabase = createClient();
-      const router = useRouter();
+  const { setTheme } = useTheme();
+  const supabase = createClient();
+  const router = useRouter();
+  const [loading, setIsLoading] = useState(false);
 
-      const handleSignOut = async() => {
-        try{
-            const {error} = await supabase.auth.signOut();
-            if (error){
-                toast.error("Error signing out")
-                return;
-            }
-            router.push("/sign-in")
-        } catch (error){
-            console.error("An unexpected error occurred", error);
-        }        
+  const handleSignOut = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast.error("Error signing out");
+        setIsLoading(false);
+        return;
       }
-    
+      router.push("/sign-in");
+      setIsLoading(false);
+    } catch (error) {
+      console.error("An unexpected error occurred", error);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (loading) return <Loader/>
+
   return (
     <Sidebar
       collapsible="none"
-      className="w-[calc(var(--sidebar-width-icon)+10px)]! border-r-2 border-foreground h-screen  p-2"
+      className="w-[calc(var(--sidebar-width-icon)+10px)]! border-r-2 border-foreground h-screen p-2"
     >
       <SidebarHeader
         className="border-2 border-foreground flex items-center flex-col rounded-lg cursor-pointer bg-foreground"
@@ -83,19 +92,31 @@ export default function AppSidebar() {
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("light")}>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setTheme("light")}
+                      >
                         Light Mode
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("dark")}>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setTheme("dark")}
+                      >
                         Dark Mode
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme("system")}>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setTheme("system")}
+                      >
                         System
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
-                <DropdownMenuItem className="cursor-pointer" onClick={handleSignOut}>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleSignOut}
+                >
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
