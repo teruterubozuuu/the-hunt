@@ -14,13 +14,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { loginSchema } from "@/lib/schema/user-details.schema";
 import { toast } from "sonner";
-import { createClient } from "@/utils/supabase/client";
 import { CircleNotchIcon } from "@phosphor-icons/react";
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setIsLoading] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,25 +49,19 @@ export default function LoginForm() {
     }
 
     try {
-      // Pick storage based on Remember Me
-      const supabase = createClient(
-        isChecked ? window.localStorage : window.sessionStorage,
-      );
-
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+      const res = await fetch("/api/auth/sign-in", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
       });
 
-      if (error) {
-        toast.error(error.message);
-        setIsLoading(false);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error);
         return;
       }
 
       toast.success("Successfully signed in");
-      setIsLoading(false);
-      router.refresh();
       router.push("/dashboard");
     } catch (error) {
       console.error("An unexpected error occurred", error);
@@ -104,7 +96,16 @@ export default function LoginForm() {
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <div className="flex justify-between items-center">
+                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <Link
+                    href="/forgot-password"
+                    className="hover:text-foreground text-foreground/70"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <Input
                   id="password"
                   name="password"
@@ -112,21 +113,6 @@ export default function LoginForm() {
                   required
                   className="border-foreground border-2"
                 />
-              </Field>
-
-              <Field>
-                <div className="flex justify-between items-center">
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      type="checkbox"
-                      className="w-3 cursor-pointer"
-                      checked={isChecked}
-                      onChange={(e) => setIsChecked(e.target.checked)}
-                    />
-                    <span>Remember me</span>
-                  </div>
-                  <Link href="/forgot-password" className="hover:text-foreground/50">Forgot password?</Link>
-                </div>
               </Field>
 
               <Field>

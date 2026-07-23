@@ -17,36 +17,27 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function ResetPasswordForm() {
-  const [loading, setIsLoading] = useState(false);
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://the-hunt-dusky.vercel.app"
-      : "http://localhost:3000";
-
   const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
-    setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${baseUrl}/change-password`,
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({email})
       });
 
-      if (error) {
-        toast.error("Failed to reset password");
-        setIsLoading(false);
+      const data = await res.json();
+      
+      if (!res.ok) {
+        toast.error(data.error);
         return;
       }
 
-      setIsLoading(false);
       toast.success("Reset password link sent to email");
     } catch (error) {
       console.error("An unexpected error occurred", error);
-      setIsLoading(false);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -55,7 +46,7 @@ export default function ResetPasswordForm() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-bold text-xl">
           <Link href="/sign-in" title="Back to Sign In page">
-            <ArrowLineLeftIcon />
+            <ArrowLineLeftIcon className="text-foreground/70 hover:text-foreground"/>
           </Link>{" "}
           Reset Password
         </CardTitle>
