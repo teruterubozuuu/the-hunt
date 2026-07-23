@@ -52,19 +52,15 @@ export default function SignUpForm() {
 
     // 4. Store credentials in SupabaseAuth
     try{
-      const { error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            username
-          }
-        }
-      })
+      const res = await fetch("/api/auth/sign-up", {
+        method: "POST",
+        body: JSON.stringify({email, password, username})
+      });
 
-      if (error) {
-        toast.error(error.message);
-        setIsLoading(false);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error);
         return;
       }
 
@@ -103,7 +99,12 @@ export default function SignUpForm() {
               </Field>
 
               <Field>
-                <Button type="submit" variant="default" className="cursor-pointer">Sign up</Button>
+                <Button 
+                type="submit" 
+                variant="default" 
+                className="cursor-pointer">
+                  Sign up
+                </Button>
                 <span className="text-center mt-2">Already have an account? {""}
                   <Link href="/sign-in" className="hover:text-foreground/50 underline transition-colors">
                     Sign in here
