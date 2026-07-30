@@ -4,19 +4,19 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarMenu,
-} from "../../ui/sidebar";
+} from "../ui/sidebar";
 import {BriefcaseIcon} from "@phosphor-icons/react";
 import UserDropdown from "./user-dropdown";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { menuItem } from "@/utils/app/constants";
+import { useActivePath } from "@/hooks/use-active-path";
+
 
 export default function AppSidebar() {
-  const pathname = usePathname();
-  const isActive = (path: string) => pathname.startsWith(path);
-  
+  const isActive = useActivePath();
+
   return (
     <Sidebar
       collapsible="none"
@@ -29,20 +29,16 @@ export default function AppSidebar() {
         <div className="rounded-lg cursor-pointer bg-foreground p-2"><BriefcaseIcon className="text-primary-foreground" size={20} /></div>
       </SidebarHeader>
       <SidebarContent className="pt-2">
-        <SidebarMenu className="flex flex-col items-center p-2 h-full justify-between">
+        <SidebarMenu className="flex flex-col items-center p-2 justify-between h-full">
           <div className="flex flex-col items-center gap-5">
             {menuItem.map((item)=>(
               <Tooltip key={item.id}>
                 <TooltipTrigger>
                   <Link href={item.path}>
                     <div
-                      className={cn(
-                        "cursor-pointer flex items-center justify-center",
-                        isActive(item.path) &&
-                          "border-2 border-foreground rounded-md p-1 transition-all ease-in-out"
-                      )}
+                      className="cursor-pointer flex items-center justify-center"
                     >
-                      {item.icon}
+                      {isActive(item.path) ? item.filled : item.icon}
                     </div>
                   </Link>
                 </TooltipTrigger>
@@ -52,14 +48,7 @@ export default function AppSidebar() {
               </Tooltip>
             ))}
           </div>
-          <Tooltip>
-            <TooltipTrigger>
-              <UserDropdown/>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              Settings
-            </TooltipContent>
-          </Tooltip>
+          <UserDropdown/>
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

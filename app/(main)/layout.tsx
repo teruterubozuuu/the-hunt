@@ -1,5 +1,5 @@
 import BottomMenu from '@/components/navbar/bottom-menu'
-import AppSidebar from '@/components/navbar/sidebar/app-sidebar'
+import AppSidebar from '@/components/sidebar/app-sidebar'
 import TopMenu from '@/components/navbar/top-menu'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import React from 'react'
