@@ -1,5 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr"; import { cookies } from "next/headers";
 import { supabaseKey, supabaseUrl } from "./supabase";
 
 export const createClient = (cookieStore: Awaited<ReturnType<typeof cookies>>) => {

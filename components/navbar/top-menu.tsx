@@ -1,7 +1,7 @@
 "use client";
 import { BriefcaseIcon } from "@phosphor-icons/react";
 import React from "react";
-import UserDropdown from "./sidebar/user-dropdown";
+import UserDropdown from "../sidebar/user-dropdown";
 
 export default function TopMenu() {
   return (
@@ -12,7 +12,7 @@ export default function TopMenu() {
                 className="text-primary-foreground bg-foreground p-1 rounded-sm"
                 size={30}
                 />
-                <span className="tracking-wide text-lg">The Hunt</span>
+                <span className="tracking-wide text-lg font-semibold uppercase">The Hunt</span>
             </div>
             <UserDropdown/>
         </div>

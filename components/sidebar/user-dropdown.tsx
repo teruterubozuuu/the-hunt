@@ -9,7 +9,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
