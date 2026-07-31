@@ -11,10 +11,10 @@ import React, { useState } from "react";
 
 export default function EmploymentTypeSelect() {
   const items = employmentType.map((item) => ({
-    value: item.type,
+    value: item.id,
     label: item.type,
   }));
-  const [value, setValue] = useState(employmentType[0].type);
+  const [value, setValue] = useState(employmentType[0].id);
   
   const handleValueChange = (newValue: string | null) => {
     if (newValue !== null) {
@@ -34,7 +34,7 @@ export default function EmploymentTypeSelect() {
       </SelectTrigger>
       <SelectContent>
         {employmentType.map((item) => (
-          <SelectItem key={item.id} value={item.type} className="cursor-pointer">
+          <SelectItem key={item.id} value={item.id} className="cursor-pointer">
             {item.type}
           </SelectItem>
         ))}

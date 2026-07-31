@@ -10,9 +10,9 @@ import { workSetup } from "@/utils/app/constants";
 import { useState } from "react";
 
 export default function WorkSetupSelect() {
-  const items = workSetup.map((item) => ({ value: item.type, label: item.type }));
+  const items = workSetup.map((item) => ({ value: item.id, label: item.type }));
 
-    const [value, setValue] = useState(workSetup[0].type);
+    const [value, setValue] = useState(workSetup[0].id);
     
     const handleValueChange = (newValue: string | null) => {
       if (newValue !== null) {
@@ -33,7 +33,7 @@ export default function WorkSetupSelect() {
       </SelectTrigger>
       <SelectContent alignItemWithTrigger={false}>
         {workSetup.map((item) => (
-          <SelectItem value={item.type} key={item.id} className="cursor-pointer">
+          <SelectItem value={item.id} key={item.id} className="cursor-pointer">
             {item.type}
           </SelectItem>
         ))}

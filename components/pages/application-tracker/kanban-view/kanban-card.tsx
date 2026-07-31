@@ -1,20 +1,16 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useDraggable } from "@dnd-kit/react";
 import { EyeIcon } from "@phosphor-icons/react";
-import React from "react";
 
 type KanbanCardProps = {
   job: JobEntry;
