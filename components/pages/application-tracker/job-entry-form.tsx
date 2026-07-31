@@ -58,9 +58,7 @@ export default function JobEntryForm({
   return (
     <form id="job-entry-form" onSubmit={handleSubmit}>
       <FieldSet>
-        {/**
-         * Job Title and Employment Type
-         */}
+        {/* Job Title and Employment Type */}
         <FieldGroup>
           <div className=" flex md:flex-row flex-col items-center gap-2">
             <Field>
@@ -84,9 +82,7 @@ export default function JobEntryForm({
           </div>
         </FieldGroup>
 
-        {/**
-         * Company Name and person to contact
-         */}
+        {/* Company Name and person to contact */}
         <FieldGroup>
           <div className="flex  md:flex-row flex-col items-center gap-2">
             <Field>
@@ -105,7 +101,7 @@ export default function JobEntryForm({
 
             <Field>
               <FieldLabel htmlFor="contact">
-                Contact<span className="text-red-600">*</span>
+                Contact
               </FieldLabel>
               <Input
                 type="text"
@@ -113,15 +109,12 @@ export default function JobEntryForm({
                 name="contact"
                 id="contact"
                 className="border-2 border-foreground"
-                required
               />
             </Field>
           </div>
         </FieldGroup>
 
-        {/**
-         * Job Description
-         */}
+        {/* Job Description */}
         <Field>
           <FieldLabel htmlFor="jobDescription">
             Job Description <span className="text-red-600">*</span>
@@ -137,9 +130,7 @@ export default function JobEntryForm({
           </div>
         </Field>
 
-        {/**
-         * Job Qualifications
-         */}
+        {/* Job Qualifications */}
         <Field>
           <FieldLabel htmlFor="jobQualifications">
             Job Qualifications <span className="text-red-600">*</span>
@@ -155,9 +146,7 @@ export default function JobEntryForm({
           </div>
         </Field>
 
-        {/**
-         * Benefits
-         */}
+        {/* Benefits */}
         <Field>
           <FieldLabel htmlFor="benefits">Benefits</FieldLabel>
           <div className="grid w-full">
@@ -170,9 +159,7 @@ export default function JobEntryForm({
           </div>
         </Field>
 
-        {/**
-         * Status and Work Setup
-         */}
+        {/* Status and Work Setup */}
         <FieldGroup>
           <div className="flex  md:flex-row flex-col items-stretch md:items-center gap-2 w-full">
             <Field>
@@ -187,9 +174,7 @@ export default function JobEntryForm({
           </div>
         </FieldGroup>
 
-        {/**
-         * Currency and Salary
-         */}
+        {/* Currency and Salary */}
         <FieldGroup>
           <div className="flex gap-2">
             <Field className="flex-1/6">
@@ -217,9 +202,7 @@ export default function JobEntryForm({
           </div>
         </FieldGroup>
 
-        {/**
-         * Job Link and Resume
-         */}
+        {/* Job Link and Resume */}
         <FieldGroup>
           <div className="flex gap-2">
             <Field>

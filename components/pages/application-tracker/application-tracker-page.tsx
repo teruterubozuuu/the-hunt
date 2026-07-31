@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import KanbanView from "./kanban-view/kanban-view";
 import ListView from "./list-view/list-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,8 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandInput } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import AddJobEntryDialog from "./add-job-entry-dialog";
-import { JobEntryData } from "@/lib/schema/application-tracker.schema";
 import { JobEntry } from "@/lib/types/job-entry";
 
 type ApplicationTrackerProps = {
@@ -32,9 +29,7 @@ export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) 
             </TabsTrigger>
           </TabsList>
 
-        {/**
-         * Search Bar Desktop View
-         */}
+        {/* - - - Search Bar Desktop View - - - */}
         <div className="hidden md:block relative">
           <Input
             type="text"
@@ -45,9 +40,7 @@ export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) 
           <MagnifyingGlassIcon className="absolute -translate-y-1/2 top-1/2 left-2" />
         </div>
 
-        {/**
-         * Search Bar Mobile View
-         */}
+        {/* - - - Search Bar Mobile View - - - */}
         <Dialog>
           <DialogTrigger className="md:hidden bg-primary px-2 py-1 rounded-md">
             <MagnifyingGlassIcon className="text-secondary"/>
