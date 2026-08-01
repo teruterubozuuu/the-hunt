@@ -17,6 +17,10 @@ type JobStatus = JobEntry["status"];
 export default function KanbanView({ jobs }: KanbanViewProps) {
   const [items, setItems] = useState(jobs);
 
+  const handleEntryDeleted = (jobId: string) => {
+    setItems((prev)=> prev.filter((job)=> job.id !== jobId));
+  };
+
   return (
     <DragDropProvider
       onDragEnd={(event) => {
@@ -38,11 +42,17 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
             </span>
 
             <div className="flex-1 min-h-0 overflow-y-auto pr-1">
-              {items
+              {items.filter((job)=> job?.status === item.id).length === 0 ? (
+              <div className="flex h-full items-center text-sm bg-muted text-muted-foreground p-4 mt-2 rounded-lg">
+                  No applications here
+                </div>
+                ) : (
+                items
                 .filter((job) => job?.status === item.id)
                 .map((job) => (
-                  <KanbanCard key={job.id} job={job} />
-                ))}
+                  <KanbanCard key={job.id} job={job} onDeleted={handleEntryDeleted}/>
+                ))
+              )}
             </div>
 
             <div className="flex items-center gap-2 mt-2">

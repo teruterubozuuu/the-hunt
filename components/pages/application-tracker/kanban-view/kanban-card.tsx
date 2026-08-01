@@ -7,19 +7,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useDraggable } from "@dnd-kit/react";
-import { EyeIcon } from "@phosphor-icons/react";
 import KanbanCardDetails from "./kanban-card-details";
+import { EyeIcon } from "@phosphor-icons/react";
+import CardDropdownMenu from "../card-dropdown-menu";
 
 type KanbanCardProps = {
   job: JobEntry;
+  onDeleted: (jobId: string) => void;
 };
 
-export default function KanbanCard({ job }: KanbanCardProps) {
+export default function KanbanCard({ job, onDeleted }: KanbanCardProps) {
   const { ref } = useDraggable({
     id: job.id,
+    
   });
 
   return (
@@ -28,7 +31,10 @@ export default function KanbanCard({ job }: KanbanCardProps) {
       className="mt-2 border border-foreground cursor-grab hover:shadow-md transition-all ease-in-out"
     >
       <CardHeader>
-        <CardTitle>{job.job_title}</CardTitle>
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-sm flex-1/2">{job.job_title}</CardTitle>
+          <CardDropdownMenu jobId={job.id} onDeleted={onDeleted}/>
+        </div>
         <CardDescription>{job.company_name}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col">
