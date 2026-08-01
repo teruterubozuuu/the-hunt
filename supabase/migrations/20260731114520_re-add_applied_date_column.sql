@@ -1,0 +1,3 @@
+ALTER TABLE job_entries
+DROP COLUMN applied_date,
+ADD COLUMN applied_at TIMESTAMPTZ DEFAULT NULL;

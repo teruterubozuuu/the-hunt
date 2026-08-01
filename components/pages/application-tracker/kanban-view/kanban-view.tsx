@@ -5,10 +5,8 @@ import { DragDropProvider } from "@dnd-kit/react";
 import { status } from "@/utils/app/constants";
 import AddJobEntryDialog from "../add-job-entry-dialog";
 import AddJobEntryFromURL from "../add-job-entry-from-url-dialog";
-import { JobEntryData } from "@/lib/schema/application-tracker.schema";
 import { JobEntry } from "@/lib/types/job-entry";
 import KanbanCard from "./kanban-card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 type KanbanViewProps = {
   jobs: JobEntry[];
@@ -32,17 +30,21 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
         );
       }}
     >
-      <div className="flex md:flex-row flex-col gap-2 items-stretch">
+      <div className="flex gap-2 items-start h-full min-h-0">
         {status.map((item) => (
           <KanbanContainer key={item.id} id={item.id}>
             <span className="font-semibold uppercase tracking-wide px-2">
               {item.type}
             </span>
-            {items
-              .filter((job) => job?.status === item.id)
-              .map((job) => (
-                <KanbanCard key={job.id} job={job} />
-              ))}
+
+            <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+              {items
+                .filter((job) => job?.status === item.id)
+                .map((job) => (
+                  <KanbanCard key={job.id} job={job} />
+                ))}
+            </div>
+
             <div className="flex items-center gap-2 mt-2">
               <AddJobEntryDialog
                 defaultStatus={item.id}

@@ -7,10 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useDraggable } from "@dnd-kit/react";
 import { EyeIcon } from "@phosphor-icons/react";
+import KanbanCardDetails from "./kanban-card-details";
 
 type KanbanCardProps = {
   job: JobEntry;
@@ -24,15 +25,14 @@ export default function KanbanCard({ job }: KanbanCardProps) {
   return (
     <Card
       ref={ref}
-      className="mt-2 border border-foreground cursor-grab hover:scale-105 hover:shadow-md transition-all ease-in-out"
+      className="mt-2 border border-foreground cursor-grab hover:shadow-md transition-all ease-in-out"
     >
       <CardHeader>
         <CardTitle>{job.job_title}</CardTitle>
         <CardDescription>{job.company_name}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col">
-        <span className="text-xs line-clamp-4">{job.job_description}</span>
-        <div className="flex mt-2 justify-between items-center">
+        <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>
             <Badge>{job.employment_type}</Badge>
@@ -41,6 +41,7 @@ export default function KanbanCard({ job }: KanbanCardProps) {
             <DialogTrigger className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs" title="View Details">
               <EyeIcon size={15}/>
             </DialogTrigger>
+              <KanbanCardDetails job={job}/>
           </Dialog>
         </div>
       </CardContent>
