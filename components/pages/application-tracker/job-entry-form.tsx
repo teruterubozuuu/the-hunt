@@ -24,6 +24,7 @@ export default function JobEntryForm({
   job,
 }: JobEntryFormProps) {
   const isEdit = Boolean(job?.id);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,8 +41,8 @@ export default function JobEntryForm({
 
     try {
       const url = isEdit
-      ? `/api/application-tracker/update-job-entry/${job!.id}`
-      : "/api/application-tracker/create-job-entry";
+        ? `/api/application-tracker/update-job-entry/${job!.id}`
+        : "/api/application-tracker/create-job-entry";
 
       console.log("PATCH URL:", url);
 
@@ -51,7 +52,9 @@ export default function JobEntryForm({
       });
 
       if (!res.ok) {
-        toast.error(isEdit ? "Failed to update job entry" : "Failed to create job entry");
+        toast.error(
+          isEdit ? "Failed to update job entry" : "Failed to create job entry",
+        );
         return;
       }
 
@@ -88,7 +91,7 @@ export default function JobEntryForm({
 
             <Field>
               <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
-              <EmploymentTypeSelect defaultValue={job?.employment_type}/>
+              <EmploymentTypeSelect defaultValue={job?.employment_type} />
             </Field>
           </div>
         </FieldGroup>
@@ -112,9 +115,7 @@ export default function JobEntryForm({
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="contact">
-                Contact
-              </FieldLabel>
+              <FieldLabel htmlFor="contact">Contact</FieldLabel>
               <Input
                 type="text"
                 placeholder="e.g Mr. Ramirez - ramirez@gmail.com / 0995*******"
@@ -185,7 +186,7 @@ export default function JobEntryForm({
 
             <Field>
               <FieldLabel htmlFor="workSetup">Work Setup</FieldLabel>
-              <WorkSetupSelect defaultValue={job?.work_setup}/>
+              <WorkSetupSelect defaultValue={job?.work_setup} />
             </Field>
           </div>
         </FieldGroup>
@@ -218,45 +219,55 @@ export default function JobEntryForm({
           </div>
         </FieldGroup>
 
-        {/* Job Link and Resume */}
-        <FieldGroup>
-          <div className="flex gap-2">
-            <Field>
-              <FieldLabel htmlFor="jobLink">Job Link</FieldLabel>
-              <Input
-                type="text"
-                name="jobLink"
-                id="jobLink"
-                placeholder="Enter job URL here..."
-                className="border-2 border-foreground"
-                defaultValue={job?.job_link}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="resume">Resume</FieldLabel>
-              <Input
-                type="file"
-                name="resume"
-                id="resume"
-                className="border-2 border-foreground cursor-pointer"
-
-              />
-            </Field>
-          </div>
-        </FieldGroup>
-
+        {/* Job Link */}
         <Field>
-          <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
+          <FieldLabel htmlFor="jobLink">Job Link</FieldLabel>
           <Input
             type="text"
-            name="additionalNotes"
-            id="additionalNotes"
-            placeholder="Type additional notes here..."
-            className="border-2 border-foreground cursor-pointer"
-            defaultValue={job?.notes}
+            name="jobLink"
+            id="jobLink"
+            placeholder="Enter job URL here..."
+            className="border-2 border-foreground"
+            defaultValue={job?.job_link}
           />
         </Field>
+
+        {/* Additional Notes */}
+        <Field>
+          <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
+          <div className="grid w-full">
+            <Textarea
+              id="additionalNotes"
+              name="additionalNotes"
+              placeholder="Type additional notes here..."
+              className="border-2 border-foreground resize-none min-h-30"
+              defaultValue={job?.notes}
+            />
+          </div>
+        </Field>
+
+        <Field>
+          <FieldLabel htmlFor="resume">Resume</FieldLabel>
+          <Input
+            type="file"
+            accept=".pdf, application/pdf"
+            name="resume"
+            id="resume"
+            className="border-2 border-foreground cursor-pointer"
+            onChange={(e) => {
+              const file = e.target.files?.[0] || null;
+              setResumeFile(file);
+            }}
+          />
+        </Field>
+
+        {/* Resume Preview */}
+        {resumeFile && (
+          <iframe
+            src={URL.createObjectURL(resumeFile)}
+            className="w-full h-250 mt-2"
+          ></iframe>
+        )}
       </FieldSet>
     </form>
   );

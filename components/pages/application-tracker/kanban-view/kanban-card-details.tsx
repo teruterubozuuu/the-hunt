@@ -16,9 +16,9 @@ type KanbanCardDetailsProps = {
 
 export default function KanbanCardDetails({ job }: KanbanCardDetailsProps) {
   return (
-    <DialogContent 
-    className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen p-5"
-    initialFocus={false}
+    <DialogContent
+      className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen p-5"
+      initialFocus={false}
     >
       <DialogHeader>
         <DialogTitle className="text-lg font-bold">{job.job_title}</DialogTitle>
