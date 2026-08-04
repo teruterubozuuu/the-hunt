@@ -13,14 +13,18 @@ import { JobEntry } from "@/lib/types/job-entry";
 type JobEntryFormProps = {
   defaultStatus?: string;
   onSuccess?: () => void;
-  onJobCreated: (job: JobEntry) => void;
+  onSubmit: (job: JobEntry) => void;
+  job?: JobEntry;
 };
 
 export default function JobEntryForm({
   defaultStatus,
   onSuccess,
-  onJobCreated,
+  onSubmit,
+  job,
 }: JobEntryFormProps) {
+  const isEdit = Boolean(job?.id);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -35,20 +39,26 @@ export default function JobEntryForm({
     }
 
     try {
-      const res = await fetch("/api/application-tracker/create-job-entry", {
-        method: "POST",
+      const url = isEdit
+      ? `/api/application-tracker/update-job-entry/${job!.id}`
+      : "/api/application-tracker/create-job-entry";
+
+      console.log("PATCH URL:", url);
+
+      const res = await fetch(url, {
+        method: isEdit ? "PATCH" : "POST",
         body: formData,
       });
 
       if (!res.ok) {
-        toast.error("Failed to create job entry");
+        toast.error(isEdit ? "Failed to update job entry" : "Failed to create job entry");
         return;
       }
 
       const { jobEntry } = await res.json();
-      onJobCreated(jobEntry);
+      onSubmit(jobEntry);
 
-      toast.success("Job entry created");
+      toast.success(isEdit ? "Job entry updated" : "Job entry created");
       onSuccess?.();
     } catch (error) {
       console.error("An unexpected error occurred", error);
@@ -71,13 +81,14 @@ export default function JobEntryForm({
                 id="jobTitle"
                 placeholder="e.g Junior Web Developer"
                 className="border-2 border-foreground"
+                defaultValue={job?.job_title}
                 required
               />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
-              <EmploymentTypeSelect />
+              <EmploymentTypeSelect defaultValue={job?.employment_type}/>
             </Field>
           </div>
         </FieldGroup>
@@ -95,6 +106,7 @@ export default function JobEntryForm({
                 id="companyName"
                 placeholder="e.g TechZ"
                 className="border-2 border-foreground"
+                defaultValue={job?.company_name}
                 required
               />
             </Field>
@@ -109,6 +121,7 @@ export default function JobEntryForm({
                 name="contact"
                 id="contact"
                 className="border-2 border-foreground"
+                defaultValue={job?.contact}
               />
             </Field>
           </div>
@@ -125,6 +138,7 @@ export default function JobEntryForm({
               name="jobDescription"
               placeholder="Enter job description here..."
               className="border-2 border-foreground resize-none min-h-30"
+              defaultValue={job?.job_description}
               required
             />
           </div>
@@ -141,6 +155,7 @@ export default function JobEntryForm({
               name="jobQualifications"
               placeholder="Enter job qualifications here..."
               className="border-2 border-foreground resize-none min-h-30"
+              defaultValue={job?.job_qualifications}
               required
             />
           </div>
@@ -155,6 +170,7 @@ export default function JobEntryForm({
               name="benefits"
               placeholder="Enter job benefits here..."
               className="border-2 border-foreground resize-none min-h-30"
+              defaultValue={job?.benefits}
             />
           </div>
         </Field>
@@ -164,12 +180,12 @@ export default function JobEntryForm({
           <div className="flex  md:flex-row flex-col items-stretch md:items-center gap-2 w-full">
             <Field>
               <FieldLabel htmlFor="status">Status</FieldLabel>
-              <StatusSelect defaultValue={defaultStatus} />
+              <StatusSelect defaultValue={job?.status ?? defaultStatus} />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="workSetup">Work Setup</FieldLabel>
-              <WorkSetupSelect />
+              <WorkSetupSelect defaultValue={job?.work_setup}/>
             </Field>
           </div>
         </FieldGroup>
@@ -184,7 +200,7 @@ export default function JobEntryForm({
                 name="currency"
                 id="currency"
                 placeholder="PHP"
-                defaultValue="PHP"
+                defaultValue={job?.currency ?? "PHP"}
                 className="border-2 border-foreground"
               />
             </Field>
@@ -195,7 +211,7 @@ export default function JobEntryForm({
                 name="salary"
                 id="salary"
                 placeholder="30,000"
-                defaultValue={0}
+                defaultValue={job?.salary ?? 0}
                 className="border-2 border-foreground flex-1"
               />
             </Field>
@@ -213,6 +229,7 @@ export default function JobEntryForm({
                 id="jobLink"
                 placeholder="Enter job URL here..."
                 className="border-2 border-foreground"
+                defaultValue={job?.job_link}
               />
             </Field>
 
@@ -223,6 +240,7 @@ export default function JobEntryForm({
                 name="resume"
                 id="resume"
                 className="border-2 border-foreground cursor-pointer"
+
               />
             </Field>
           </div>
@@ -236,6 +254,7 @@ export default function JobEntryForm({
             id="additionalNotes"
             placeholder="Type additional notes here..."
             className="border-2 border-foreground cursor-pointer"
+            defaultValue={job?.notes}
           />
         </Field>
       </FieldSet>

@@ -34,7 +34,7 @@ export default function AddJobEntryDialog({defaultStatus, onJobCreated} : AddJob
           {/**
            *  FormData for manually adding Job Entries
            */}
-          <JobEntryForm defaultStatus={defaultStatus} onSuccess={() => setOpen(false)} onJobCreated={onJobCreated}/>
+          <JobEntryForm defaultStatus={defaultStatus} onSuccess={() => setOpen(false)} onSubmit={onJobCreated}/>
         </div>
         <DialogFooter className="p-6 py-2">
           <Button type="submit" form="job-entry-form" className="cursor-pointer">Add Entry</Button>

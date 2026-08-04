@@ -4,56 +4,71 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    return NextResponse.json(
-      { success: false, message: "Unauthorized" },
-      { status: 401 },
-    );
-  }
-
-  // Parse multipart form data instead of JSON
-  const formData = await req.formData();
-  const raw = Object.fromEntries(formData.entries());
-
-  const result = jobEntrySchema.safeParse(raw);
-
-  if (!result.success) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Invalid input",
-        errors: result.error.flatten().fieldErrors,
-      },
-      { status: 400 },
-    );
-  }
-
-  const {
-    jobTitle,
-    employmentType,
-    companyName,
-    contact,
-    jobDescription,
-    jobQualifications,
-    status,
-    workSetup,
-    currency,
-    salary,
-    jobLink,
-    resume,
-  } = result.data;
-
   try {
-    let resumeUrl: string | null = null;
+    const cookieStore = await cookies(); // gets the user's session cookies for SSR auth
+    const supabase = createClient(cookieStore); // creates a server-side client
 
+    // Check if user is logged in
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    // Stop everything if there's no user
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
+    // Parse multipart form data instead of JSON
+    const formData = await req.formData();
+    const raw = Object.fromEntries(formData.entries());
+
+    // Validate input using schema from zod
+    const result = jobEntrySchema.safeParse(raw);
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid input",
+          errors: result.error.flatten().fieldErrors,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Extract valid data
+    const {
+      jobTitle,
+      employmentType,
+      companyName,
+      contact,
+      jobDescription,
+      jobQualifications,
+      status,
+      workSetup,
+      currency,
+      salary,
+      jobLink,
+      resume,
+    } = result.data;
+
+    /**
+     * Handle resume upload
+     * Only proceed if:
+     * - A file exists
+     * - It's not empty
+     */
+    let resumePath: string | null = null;
+
+    /**
+     * Validate file
+     * - Only allow pdfs
+     * - Prevent users from uploading random files
+     */
     if (resume instanceof File && resume.size > 0) {
       // Guard against unexpected file types/sizes
       if (resume.type !== "application/pdf") {
@@ -63,9 +78,19 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const fileExt = resume.name.split(".").pop();
+      const fileExt = "pdf";
+      /**
+       * Create unique file path
+       * - Files are grouped per user (user.id);
+       * - randomUUID() prevents filename collisions
+       */
       const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
 
+      /**
+       * Upload to Supabase Storage
+       * - Bucket: "resumes"
+       * - Path: "userId/random-file.pdf"
+       */
       const { error: uploadError } = await supabase.storage
         .from("resumes")
         .upload(filePath, resume, {
@@ -81,21 +106,15 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const { data: signedData, error: signedError } = await supabase.storage
-        .from("resumes")
-        .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7-day expiry
-
-      if (signedError) {
-        console.error(signedError);
-        return NextResponse.json(
-          { success: false, message: "Failed to generate resume URL" },
-          { status: 500 },
-        );
-      }
-
-      resumeUrl = signedData?.signedUrl ?? null;
+      resumePath = filePath;
     }
 
+    /**
+     * Insert into Database
+     * - Inserts a new row into job_entries
+     * - Stores: job info, resume URL
+     * - .select().single() returns the inserted row
+     */
     const { data: jobEntry, error: jobEntryError } = await supabase
       .from("job_entries")
       .insert({
@@ -111,13 +130,13 @@ export async function POST(req: NextRequest) {
         currency,
         salary,
         job_link: jobLink,
-        resume: resumeUrl,
+        resume: resumePath,
       })
       .select()
-      .single()
+      .single();
 
     if (jobEntryError) {
-        console.error("jobEntryError:", jobEntryError);
+      console.error("jobEntryError:", jobEntryError);
       return NextResponse.json(
         { success: false, message: "An unexpected error occurred" },
         { status: 500 },

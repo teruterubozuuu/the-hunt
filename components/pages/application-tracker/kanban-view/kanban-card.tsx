@@ -17,9 +17,10 @@ import CardDropdownMenu from "../card-dropdown-menu";
 type KanbanCardProps = {
   job: JobEntry;
   onDeleted: (jobId: string) => void;
+  onUpdated: (job: JobEntry) => void;
 };
 
-export default function KanbanCard({ job, onDeleted }: KanbanCardProps) {
+export default function KanbanCard({ job, onDeleted, onUpdated }: KanbanCardProps) {
   const { ref } = useDraggable({
     id: job.id,
     
@@ -33,7 +34,7 @@ export default function KanbanCard({ job, onDeleted }: KanbanCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle className="text-sm flex-1/2">{job.job_title}</CardTitle>
-          <CardDropdownMenu jobId={job.id} onDeleted={onDeleted}/>
+          <CardDropdownMenu job={job} onDeleted={onDeleted} onUpdated={onUpdated}/>
         </div>
         <CardDescription>{job.company_name}</CardDescription>
       </CardHeader>

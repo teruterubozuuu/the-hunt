@@ -23,23 +23,27 @@ import {
 } from "@phosphor-icons/react";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import DeleteJobEntryAlertDialog from "./delete-job-entry-alert-dialog";
+import EditJobEntryDialog from "./edit-job-entry-dialog";
+import { JobEntry } from "@/lib/types/job-entry";
 
 type CardDropdownMenuProps = {
-  jobId: string;
+  job: JobEntry;
   onDeleted: (jobId: string) => void;
-
+  onUpdated: (job: JobEntry) => void;
 };
 
-export default function CardDropdownMenu({ jobId, onDeleted }: CardDropdownMenuProps) {
-  const [open, setOpen] = useState(false);
+export default function CardDropdownMenu({ job, onDeleted, onUpdated }: CardDropdownMenuProps) {
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const {deleteCard} = useDeleteCard();
 
   const handleDelete = async() => {
     try{
-      await deleteCard(jobId);
+      await deleteCard(job.id);
       toast.success("Successfully deleted card");
-      setOpen(false);
-      onDeleted(jobId);
+      setOpenDeleteDialog(false);
+      onDeleted(job.id);
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete card");
@@ -53,33 +57,23 @@ export default function CardDropdownMenu({ jobId, onDeleted }: CardDropdownMenuP
           <DotsThreeOutlineIcon size={15} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem 
+            className="cursor-pointer"
+            onClick={()=> setOpenEditDialog(true)}
+          >
             <NotePencilIcon /> Edit
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer"
-            onClick={() => setOpen(true)}
+            onClick={() => setOpenDeleteDialog(true)}
           >
             <TrashIcon /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will delete the card from your
-              kanban.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="cursor-pointer" onClick={handleDelete}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteJobEntryAlertDialog open={openDeleteDialog} setOpen={setOpenDeleteDialog} handleDelete={handleDelete}/>
+      <EditJobEntryDialog open={openEditDialog} setOpen={setOpenEditDialog} job={job} onJobUpdated={onUpdated}/>
     </>
   );
 }

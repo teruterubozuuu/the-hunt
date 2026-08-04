@@ -20,6 +20,12 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
   const handleEntryDeleted = (jobId: string) => {
     setItems((prev)=> prev.filter((job)=> job.id !== jobId));
   };
+  
+  const handleEntryUpdated = (updatedJob: JobEntry) => {
+    setItems((prev)=> 
+      prev.map((job)=> (job.id === updatedJob.id ? updatedJob: job))
+    )
+  }
 
   return (
     <DragDropProvider
@@ -50,7 +56,7 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
                 items
                 .filter((job) => job?.status === item.id)
                 .map((job) => (
-                  <KanbanCard key={job.id} job={job} onDeleted={handleEntryDeleted}/>
+                  <KanbanCard key={job.id} job={job} onDeleted={handleEntryDeleted} onUpdated={handleEntryUpdated}/>
                 ))
               )}
             </div>

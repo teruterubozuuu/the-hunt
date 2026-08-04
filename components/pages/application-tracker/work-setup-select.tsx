@@ -9,10 +9,14 @@ import {
 import { workSetup } from "@/utils/app/constants";
 import { useState } from "react";
 
-export default function WorkSetupSelect() {
+type WorkSetupSelectProps = {
+  defaultValue?:string;
+}
+
+export default function WorkSetupSelect({defaultValue}: WorkSetupSelectProps) {
   const items = workSetup.map((item) => ({ value: item.id, label: item.type }));
 
-    const [value, setValue] = useState(workSetup[0].id);
+    const [value, setValue] = useState(defaultValue ?? workSetup[0].id);
     
     const handleValueChange = (newValue: string | null) => {
       if (newValue !== null) {
