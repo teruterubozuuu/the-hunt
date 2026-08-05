@@ -7,7 +7,7 @@ import WorkSetupSelect from "./work-setup-select";
 import EmploymentTypeSelect from "./employment-type-select";
 import { jobEntrySchema } from "@/lib/schema/application-tracker.schema";
 import { toast } from "sonner";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { JobEntry } from "@/lib/types/job-entry";
 
 type JobEntryFormProps = {
@@ -25,6 +25,19 @@ export default function JobEntryForm({
 }: JobEntryFormProps) {
   const isEdit = Boolean(job?.id);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | undefined>(
+    job?.status ?? defaultStatus,
+  );
+
+  useEffect(() => {
+    if (!resumeFile) return;
+
+    const url = URL.createObjectURL(resumeFile);
+    setPreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url); // cleanup
+  }, [resumeFile]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,31 +84,6 @@ export default function JobEntryForm({
   return (
     <form id="job-entry-form" onSubmit={handleSubmit}>
       <FieldSet>
-        {/* Job Title and Employment Type */}
-        <FieldGroup>
-          <div className=" flex md:flex-row flex-col items-center gap-2">
-            <Field>
-              <FieldLabel htmlFor="jobTitle">
-                Job Title <span className="text-red-600">*</span>
-              </FieldLabel>
-              <Input
-                type="text"
-                name="jobTitle"
-                id="jobTitle"
-                placeholder="e.g Junior Web Developer"
-                className="border-2 border-foreground"
-                defaultValue={job?.job_title}
-                required
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
-              <EmploymentTypeSelect defaultValue={job?.employment_type} />
-            </Field>
-          </div>
-        </FieldGroup>
-
         {/* Company Name and person to contact */}
         <FieldGroup>
           <div className="flex  md:flex-row flex-col items-center gap-2">
@@ -123,6 +111,93 @@ export default function JobEntryForm({
                 id="contact"
                 className="border-2 border-foreground"
                 defaultValue={job?.contact}
+              />
+            </Field>
+          </div>
+        </FieldGroup>
+
+        {/* Job Title and Employment Type */}
+        <FieldGroup>
+          <div className=" flex md:flex-row flex-col items-center gap-2">
+            <Field>
+              <FieldLabel htmlFor="jobTitle">
+                Job Title <span className="text-red-600">*</span>
+              </FieldLabel>
+              <Input
+                type="text"
+                name="jobTitle"
+                id="jobTitle"
+                placeholder="e.g Junior Web Developer"
+                className="border-2 border-foreground"
+                defaultValue={job?.job_title}
+                required
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
+              <EmploymentTypeSelect defaultValue={job?.employment_type} />
+            </Field>
+          </div>
+        </FieldGroup>
+
+        {/* Status and Work Setup */}
+        <FieldGroup>
+          <div className="flex  md:flex-row flex-col items-stretch md:items-center gap-2 w-full">
+            <Field>
+              <FieldLabel htmlFor="status">Status</FieldLabel>
+              <StatusSelect
+                defaultValue={job?.status ?? defaultStatus}
+                onValueChange={setStatus}
+              />
+            </Field>
+
+            {status === "applied" && (
+              <Field>
+                <FieldLabel htmlFor="appliedDate">Applied Date</FieldLabel>
+                <Input
+                  type="date"
+                  name="appliedDate"
+                  id="appliedDate"
+                  className="border-2 border-foreground"
+                  defaultValue={
+                    job?.applied_at ? job.applied_at.split("T")[0] : ""
+                  }
+                  required
+                />
+              </Field>
+            )}
+
+            <Field>
+              <FieldLabel htmlFor="workSetup">Work Setup</FieldLabel>
+              <WorkSetupSelect defaultValue={job?.work_setup} />
+            </Field>
+          </div>
+        </FieldGroup>
+
+        {/* Currency and Salary */}
+        <FieldGroup>
+          <div className="flex gap-2">
+            <Field className="flex-1/6">
+              <FieldLabel htmlFor="currency">Currency</FieldLabel>
+              <Input
+                type="text"
+                name="currency"
+                id="currency"
+                placeholder="PHP"
+                defaultValue={job?.currency ?? "PHP"}
+                className="border-2 border-foreground"
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="salary">Salary</FieldLabel>
+              <Input
+                type="number"
+                name="salary"
+                id="salary"
+                placeholder="30,000"
+                defaultValue={job?.salary ?? 0}
+                className="border-2 border-foreground flex-1"
               />
             </Field>
           </div>
@@ -176,62 +251,6 @@ export default function JobEntryForm({
           </div>
         </Field>
 
-        {/* Status and Work Setup */}
-        <FieldGroup>
-          <div className="flex  md:flex-row flex-col items-stretch md:items-center gap-2 w-full">
-            <Field>
-              <FieldLabel htmlFor="status">Status</FieldLabel>
-              <StatusSelect defaultValue={job?.status ?? defaultStatus} />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="workSetup">Work Setup</FieldLabel>
-              <WorkSetupSelect defaultValue={job?.work_setup} />
-            </Field>
-          </div>
-        </FieldGroup>
-
-        {/* Currency and Salary */}
-        <FieldGroup>
-          <div className="flex gap-2">
-            <Field className="flex-1/6">
-              <FieldLabel htmlFor="currency">Currency</FieldLabel>
-              <Input
-                type="text"
-                name="currency"
-                id="currency"
-                placeholder="PHP"
-                defaultValue={job?.currency ?? "PHP"}
-                className="border-2 border-foreground"
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="salary">Salary</FieldLabel>
-              <Input
-                type="number"
-                name="salary"
-                id="salary"
-                placeholder="30,000"
-                defaultValue={job?.salary ?? 0}
-                className="border-2 border-foreground flex-1"
-              />
-            </Field>
-          </div>
-        </FieldGroup>
-
-        {/* Job Link */}
-        <Field>
-          <FieldLabel htmlFor="jobLink">Job Link</FieldLabel>
-          <Input
-            type="text"
-            name="jobLink"
-            id="jobLink"
-            placeholder="Enter job URL here..."
-            className="border-2 border-foreground"
-            defaultValue={job?.job_link}
-          />
-        </Field>
-
         {/* Additional Notes */}
         <Field>
           <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
@@ -246,6 +265,20 @@ export default function JobEntryForm({
           </div>
         </Field>
 
+        {/* Job Link */}
+        <Field>
+          <FieldLabel htmlFor="jobLink">Job Link</FieldLabel>
+          <Input
+            type="text"
+            name="jobLink"
+            id="jobLink"
+            placeholder="Enter job URL here..."
+            className="border-2 border-foreground"
+            defaultValue={job?.job_link}
+          />
+        </Field>
+
+        {/* Resume */}
         <Field>
           <FieldLabel htmlFor="resume">Resume</FieldLabel>
           <Input
@@ -262,11 +295,8 @@ export default function JobEntryForm({
         </Field>
 
         {/* Resume Preview */}
-        {resumeFile && (
-          <iframe
-            src={URL.createObjectURL(resumeFile)}
-            className="w-full h-250 mt-2"
-          ></iframe>
+        {previewUrl && (
+          <iframe src={previewUrl} className="w-full h-250 mt-2"></iframe>
         )}
       </FieldSet>
     </form>

@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
       salary,
       jobLink,
       resume,
+      appliedDate,
     } = result.data;
 
     /**
@@ -131,6 +132,7 @@ export async function POST(req: NextRequest) {
         salary,
         job_link: jobLink,
         resume: resumePath,
+        applied_at: appliedDate,
       })
       .select()
       .single();

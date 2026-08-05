@@ -11,9 +11,10 @@ import React, { useState } from "react";
 
 type StatusSelectProps = {
   defaultValue?: string;
+  onValueChange?:(value: string) => void;
 };
 
-export default function StatusSelect({ defaultValue }: StatusSelectProps) {
+export default function StatusSelect({ defaultValue, onValueChange }: StatusSelectProps) {
   const items = status.map((item) => ({ value: item.id, label: item.type }));
   
   const [value, setValue] = useState(defaultValue ?? status[0].id);
@@ -21,6 +22,7 @@ export default function StatusSelect({ defaultValue }: StatusSelectProps) {
   const handleValueChange = (newValue: string | null) => {
     if (newValue !== null) {
       setValue(newValue);
+      onValueChange?.(newValue);
     }
   };
 

@@ -15,7 +15,7 @@ export const jobEntrySchema = z.object({
     resume: z.instanceof(File).optional(),
     benefits: z.string().optional(),
     additionalNotes: z.string().optional(),
-    applied_date: z.string().datetime().optional(),
+    appliedDate: z.string().date().optional(),
 });
 
 export type JobEntryData = z.infer<typeof jobEntrySchema>;

@@ -1,3 +1,4 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import {
   DialogContent,
@@ -8,13 +9,38 @@ import {
 import { Label } from "@/components/ui/label";
 import { JobEntry } from "@/lib/types/job-entry";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type KanbanCardDetailsProps = {
   job: JobEntry;
 };
 
 export default function KanbanCardDetails({ job }: KanbanCardDetailsProps) {
+  const [resumeUrl, setResumeUrl] = useState<string | null>(null);
+
+useEffect(() => {
+  const fetchUrl = async () => {
+    if (!job.resume) return;
+    try {
+      const res = await fetch(`/api/application-tracker/get-resume-url?path=${encodeURIComponent(job.resume)}`);
+
+      if (!res.ok) {
+        toast.error(`Failed to fetch resume URL: ${res.status}`);
+        setResumeUrl(null);
+        return;
+      }
+
+      const data = await res.json();
+      setResumeUrl(data.url ?? null);
+    } catch (err) {
+      console.error(err);
+      setResumeUrl(null);
+    }
+  };
+  fetchUrl();
+}, [job.resume]);
+
   return (
     <DialogContent
       className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen p-5"
@@ -114,10 +140,10 @@ export default function KanbanCardDetails({ job }: KanbanCardDetailsProps) {
           >
             Resume
           </Label>
-          {!job.resume?.length ? (
-            <span>N/A</span>
+          {resumeUrl ? (
+            <iframe src={resumeUrl} className="w-full h-250 mt-2" title="Resume preview"/>
           ) : (
-            <iframe src={job.resume} className="w-full h-250 mt-2"></iframe>
+            <p>Loading resume...</p>
           )}
         </section>
       </div>

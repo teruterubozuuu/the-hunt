@@ -20,10 +20,13 @@ type KanbanCardProps = {
   onUpdated: (job: JobEntry) => void;
 };
 
-export default function KanbanCard({ job, onDeleted, onUpdated }: KanbanCardProps) {
+export default function KanbanCard({
+  job,
+  onDeleted,
+  onUpdated,
+}: KanbanCardProps) {
   const { ref } = useDraggable({
     id: job.id,
-    
   });
 
   return (
@@ -33,22 +36,34 @@ export default function KanbanCard({ job, onDeleted, onUpdated }: KanbanCardProp
     >
       <CardHeader>
         <div className="flex items-start justify-between">
-          <CardTitle className="text-sm flex-1/2">{job.job_title}</CardTitle>
-          <CardDropdownMenu job={job} onDeleted={onDeleted} onUpdated={onUpdated}/>
+          <CardTitle className="text-sm flex-1/2 line-clamp-2">{job.job_title}</CardTitle>
+          <CardDropdownMenu
+            job={job}
+            onDeleted={onDeleted}
+            onUpdated={onUpdated}
+          />
         </div>
         <CardDescription>{job.company_name}</CardDescription>
+        {job.status === "applied" && (
+          <span className="text-xs text-muted-foreground">
+            Applied at {job?.applied_at ? job.applied_at.split("T")[0] : ""}
+          </span>
+        )}
       </CardHeader>
       <CardContent className="flex flex-col">
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>
-            <Badge>{job.employment_type}</Badge>
+            <Badge className="truncate max-w-25 line-clamp-1" title={job.employment_type}>{job.employment_type}</Badge>
           </div>
           <Dialog>
-            <DialogTrigger className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs" title="View Details">
-              <EyeIcon size={15}/>
+            <DialogTrigger
+              className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs"
+              title="View Details"
+            >
+              <EyeIcon size={15} />
             </DialogTrigger>
-              <KanbanCardDetails job={job}/>
+            <KanbanCardDetails job={job} />
           </Dialog>
         </div>
       </CardContent>

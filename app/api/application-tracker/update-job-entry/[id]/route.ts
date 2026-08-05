@@ -58,13 +58,14 @@ export async function PATCH(
       const fileExt = "pdf";
       const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase
+      const { error: uploadError } = await supabase.storage
         .from("resumes")
         .upload(filePath, updateData.resume, {
           contentType: updateData.resume.type,
         });
 
       if (uploadError) {
+        console.error("UPLOAD ERROR:", uploadError);
         return NextResponse.json(
           { success: false, message: "Upload failed" },
           { status: 500 },
@@ -97,6 +98,8 @@ export async function PATCH(
       ...(updateData.currency && { currency: updateData.currency }),
       ...(updateData.salary && { salary: Number(updateData.salary) }),
       ...(updateData.jobLink && { job_link: updateData.jobLink }),
+      ...(updateData.appliedDate && {applied_at: updateData.appliedDate}),
+      ...(updateData.benefits && {benefits: updateData.benefits}),
       ...(resumePath && { resume: resumePath }),
     };
 
