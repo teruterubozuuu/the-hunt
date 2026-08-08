@@ -13,6 +13,7 @@ import { useDraggable } from "@dnd-kit/react";
 import KanbanCardDetails from "./kanban-card-details";
 import { EyeIcon } from "@phosphor-icons/react";
 import CardDropdownMenu from "../card-dropdown-menu";
+import Link from "next/link";
 
 type KanbanCardProps = {
   job: JobEntry;
@@ -28,6 +29,8 @@ export default function KanbanCard({
   const { ref } = useDraggable({
     id: job.id,
   });
+
+
 
   return (
     <Card
@@ -46,11 +49,12 @@ export default function KanbanCard({
         <CardDescription>{job.company_name}</CardDescription>
         {job.status === "applied" && (
           <span className="text-xs text-muted-foreground">
-            Applied at {job?.applied_at ? job.applied_at.split("T")[0] : ""}
+            Applied at {job?.applied_at ? job.applied_at.split("T")[0] : "" }
           </span>
         )}
       </CardHeader>
       <CardContent className="flex flex-col">
+        <Link href={job.job_link} className="text-xs line-clamp-2 text-ellipsis mb-2 opacity-70 hover:opacity-100 hover:underline" target="_blank">{job.job_link}</Link>
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>
