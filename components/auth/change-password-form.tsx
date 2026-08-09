@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/card";
 import { FieldSet, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/utils/supabase/client";
-import { supabase } from "@/utils/supabase/supabase";
 import { CircleNotchIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,14 +22,15 @@ export default function ChangePasswordForm() {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const newPassword = formData.get("new-password") as string;
+
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        body: formData,
       });
 
-      if (error) {
+      if (!res.ok) {
         toast.error("Failed to update password");
         setIsLoading(false);
         return;
