@@ -14,19 +14,43 @@ jobs:
         run: |
           echo "Running unit tests..."
           # Add your actual test commands here (e.g., npm test, pytest)
+
   deploy-dev:
     needs: build-and-test
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: development
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCELORGID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCELPROJECTID }}
     steps:
-      - name: Deploy to Development Server
-        run: echo "Deploying develop branch to Dev environment..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Info
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCELTOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCELTOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCELTOKEN }}
+
   deploy-production:
     needs: build-and-test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCELORGID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCELPROJECTID }}
     steps:
-      - name: Deploy to Production Server
-        run: echo "Deploying main branch to Production environment..."
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Info
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCELTOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCELTOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCELTOKEN }}
