@@ -32,15 +32,20 @@ export async function PATCH(
       );
     }
 
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Invalid or missing request body" },
+        { status: 400 },
+      );
+    }
     const { status } = body;
 
     if (!status) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Status not found",
-        },
+        { success: false, message: "Status not found" },
         { status: 400 },
       );
     }
