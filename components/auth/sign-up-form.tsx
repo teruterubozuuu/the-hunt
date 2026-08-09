@@ -8,7 +8,6 @@ import { useState } from "react";
 import { userSchema } from "@/lib/schema/user-details.schema";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase/supabase";
 
 export default function SignUpForm() {
   const router = useRouter();
