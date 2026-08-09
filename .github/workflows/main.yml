@@ -21,19 +21,29 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCELORGID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCELPROJECTID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+      
+      - name: Debug env vars
+        run: |
+          echo "ORG_ID: '$VERCEL_ORG_ID'"
+          echo "ORG_ID length: ${#VERCEL_ORG_ID}"
+          echo "PROJECT_ID: '$VERCEL_PROJECT_ID'"
+          echo "PROJECT_ID length: ${#VERCEL_PROJECT_ID}"
+          
       - name: Pull Vercel Environment Info
-        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCELTOKEN }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Check env file
+        run: cat .vercel/.env.preview.local | grep SUPABASE || echo "NOT FOUND"
       - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCELTOKEN }}
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCELTOKEN }}
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
   deploy-production:
     needs: build-and-test
@@ -41,16 +51,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     env:
-      VERCEL_ORG_ID: ${{ secrets.VERCELORGID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCELPROJECTID }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Pull Vercel Environment Info
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCELTOKEN }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCELTOKEN }}
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCELTOKEN }}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
