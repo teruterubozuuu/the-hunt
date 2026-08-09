@@ -11,17 +11,28 @@ import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandInput } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useState } from "react";
 
 type ApplicationTrackerProps = {
   jobs: JobEntry[];
 }
 
 export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) {
+  const MOBILE_BREAKPOINT = 1280;
+  const isMobile = useIsMobile(MOBILE_BREAKPOINT);
+  const [view, setView] = useState<"kanban" | "list">("kanban");
+
+  // Force list whenever view is on mobile
+  useEffect(()=>{
+    if(isMobile && view === "kanban") setView("list");
+  },[isMobile, view]);
+
   return (
-    <Tabs>
+    <Tabs value={view} onValueChange={(v)=> setView(v as "kanban" | "list")}>
       <div className="flex justify-between">
           <TabsList className="border-2 border-foreground">
-            <TabsTrigger value="kanban" className="cursor-pointer">
+            <TabsTrigger value="kanban" className="hidden xl:flex cursor-pointer">
               <KanbanIcon /> Kanban
             </TabsTrigger>
             <TabsTrigger value="list" className="cursor-pointer">

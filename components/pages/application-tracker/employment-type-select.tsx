@@ -9,12 +9,16 @@ import {
 import { employmentType } from "@/utils/app/constants";
 import React, { useState } from "react";
 
-export default function EmploymentTypeSelect() {
+type EmploymentTypeSelectProps = {
+  defaultValue? :string;
+}
+
+export default function EmploymentTypeSelect({defaultValue}: EmploymentTypeSelectProps) {
   const items = employmentType.map((item) => ({
     value: item.id,
     label: item.type,
   }));
-  const [value, setValue] = useState(employmentType[0].id);
+  const [value, setValue] = useState(defaultValue ?? employmentType[0].id);
   
   const handleValueChange = (newValue: string | null) => {
     if (newValue !== null) {

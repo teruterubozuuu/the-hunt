@@ -13,5 +13,8 @@ export type JobEntry = {
   salary: string;
   job_link: string;
   resume?: string; // a URL, not File
+  benefits?: string;
+  notes?: string;
+  applied_at?: string;
   created_at?: string;
 };

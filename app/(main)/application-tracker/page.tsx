@@ -29,7 +29,8 @@ export default async function Tracker() {
   if (jobEntryError) {
     console.error("Failed to fetch job entries", jobEntryError);
     toast.error("Failed to fetch job entries");
+    return;
   }
 
-  return <ApplicationTrackerPage jobs={jobEntry ?? []} />;
+  return <ApplicationTrackerPage jobs={jobEntry} />;
 }
