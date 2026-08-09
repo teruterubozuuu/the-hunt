@@ -58,7 +58,7 @@ export default function KanbanCard({
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>
-            <Badge className="truncate max-w-25 line-clamp-1" title={job.employment_type}>{job.employment_type}</Badge>
+            <Badge className="truncate max-w-23 line-clamp-1" title={job.employment_type}>{job.employment_type}</Badge>
           </div>
           <Dialog>
             <DialogTrigger
