@@ -19,8 +19,7 @@ type ApplicationTrackerProps = {
 }
 
 export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) {
-  const MOBILE_BREAKPOINT = 1280;
-  const isMobile = useIsMobile(MOBILE_BREAKPOINT);
+  const isMobile = useIsMobile();
   const [view, setView] = useState<"kanban" | "list">("kanban");
 
   // Force list whenever view is on mobile

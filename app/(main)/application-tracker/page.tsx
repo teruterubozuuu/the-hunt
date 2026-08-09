@@ -1,9 +1,7 @@
 import ApplicationTrackerPage from "@/components/pages/application-tracker/application-tracker-page";
-import { JobEntry } from "@/lib/types/job-entry";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 import { toast } from "sonner";
 
 export default async function Tracker() {
