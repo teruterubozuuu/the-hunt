@@ -38,12 +38,12 @@ jobs:
           
       - name: Pull Vercel Environment Info
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Check env file
+        run: cat .vercel/.env.preview.local | grep SUPABASE || echo "NOT FOUND"
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Check env file
-        run: cat .vercel/.env.preview.local | grep SUPABASE || echo "NOT FOUND"
 
   deploy-production:
     needs: build-and-test
