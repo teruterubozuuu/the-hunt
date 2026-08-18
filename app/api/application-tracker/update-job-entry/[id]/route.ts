@@ -86,6 +86,8 @@ export async function PATCH(
         employment_type: updateData.employmentType,
       }),
       ...(updateData.companyName && { company_name: updateData.companyName }),
+      ...(updateData.companyWebsite && {company_website: updateData.companyWebsite}),
+      ...(updateData.location && {company_location: updateData.location}),
       ...(updateData.contact && { contact: updateData.contact }),
       ...(updateData.jobDescription && {
         job_description: updateData.jobDescription,
@@ -100,6 +102,7 @@ export async function PATCH(
       ...(updateData.jobLink && { job_link: updateData.jobLink }),
       ...(updateData.appliedDate && {applied_at: updateData.appliedDate}),
       ...(updateData.benefits && {benefits: updateData.benefits}),
+      ...(updateData.additionalNotes && {additional_notes: updateData.additionalNotes}),
       ...(resumePath && { resume: resumePath }),
     };
 

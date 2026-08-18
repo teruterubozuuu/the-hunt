@@ -4,6 +4,8 @@ export const jobEntrySchema = z.object({
     jobTitle: z.string().min(1, "A job title is required"),
     employmentType: z.enum(["full-time", "part-time", "contract", "contract-to-hire", "internship", "temporary", "freelance"]),
     companyName: z.string().min(1, "A company name is required"),
+    companyWebsite: z.string().optional(),
+    location: z.string().optional(),
     contact: z.string().optional(),
     jobDescription: z.string().min(1, "A job description is required"),
     jobQualifications: z.string().min(1, "Job qualifications are required"),

@@ -84,7 +84,7 @@ export default function JobEntryForm({
   return (
     <form id="job-entry-form" onSubmit={handleSubmit}>
       <FieldSet>
-        {/* Company Name and person to contact */}
+        {/* Company Name, Contact, Location, Website*/}
         <FieldGroup>
           <div className="flex  md:flex-row flex-col items-center gap-2">
             <Field>
@@ -114,6 +114,30 @@ export default function JobEntryForm({
               />
             </Field>
           </div>
+
+          <Field>
+            <FieldLabel>Company Website</FieldLabel>
+            <Input
+              type="text"
+              name="companyWebsite"
+              id="companyWebsite"
+              placeholder="Enter company website link here..."
+              className="border-2 border-foreground"
+              defaultValue={job?.company_website}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Location</FieldLabel>
+            <Input
+              type="text"
+              name="location"
+              id="location"
+              placeholder="Enter company location here..."
+              className="border-2 border-foreground"
+              defaultValue={job?.company_location}
+            />
+          </Field>
         </FieldGroup>
 
         {/* Job Title and Employment Type */}
@@ -258,21 +282,21 @@ export default function JobEntryForm({
             <Textarea
               id="additionalNotes"
               name="additionalNotes"
-              placeholder="Type additional notes here..."
+              placeholder="Enter additional notes here..."
               className="border-2 border-foreground resize-none min-h-30"
-              defaultValue={job?.notes}
+              defaultValue={job?.additional_notes}
             />
           </div>
         </Field>
 
         {/* Job Link */}
         <Field>
-          <FieldLabel htmlFor="jobLink">Job Link</FieldLabel>
+          <FieldLabel htmlFor="jobLink">Job Post Link</FieldLabel>
           <Input
             type="text"
             name="jobLink"
             id="jobLink"
-            placeholder="Enter job URL here..."
+            placeholder="Enter job post link here..."
             className="border-2 border-foreground"
             defaultValue={job?.job_link}
           />

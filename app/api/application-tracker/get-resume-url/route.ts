@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
 
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
+    const EXPIRES_IN = 60 * 60 // 1 hour
 
     const { data, error } = await supabase.storage
       .from("resumes")
@@ -29,7 +30,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ url: data.signedUrl });
+    return NextResponse.json(
+      { url: data.signedUrl }, 
+      {headers: {"Cache-Control": `private, max-age=${EXPIRES_IN - 300}`}} // 55 min
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(
