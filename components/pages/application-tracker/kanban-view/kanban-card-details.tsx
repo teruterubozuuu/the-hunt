@@ -19,27 +19,29 @@ type KanbanCardDetailsProps = {
 export default function KanbanCardDetails({ job }: KanbanCardDetailsProps) {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
 
-useEffect(() => {
-  const fetchUrl = async () => {
-    if (!job.resume) return;
-    try {
-      const res = await fetch(`/api/application-tracker/get-resume-url?path=${encodeURIComponent(job.resume)}`);
+  useEffect(() => {
+    const fetchUrl = async () => {
+      if (!job.resume) return;
+      try {
+        const res = await fetch(
+          `/api/application-tracker/get-resume-url?path=${encodeURIComponent(job.resume)}`,
+        );
 
-      if (!res.ok) {
-        toast.error(`Failed to fetch resume URL: ${res.status}`);
+        if (!res.ok) {
+          toast.error(`Failed to fetch resume URL: ${res.status}`);
+          setResumeUrl(null);
+          return;
+        }
+
+        const data = await res.json();
+        setResumeUrl(data.url ?? null);
+      } catch (err) {
+        console.error(err);
         setResumeUrl(null);
-        return;
       }
-
-      const data = await res.json();
-      setResumeUrl(data.url ?? null);
-    } catch (err) {
-      console.error(err);
-      setResumeUrl(null);
-    }
-  };
-  fetchUrl();
-}, [job.resume]);
+    };
+    fetchUrl();
+  }, [job.resume]);
 
   return (
     <DialogContent
@@ -48,7 +50,11 @@ useEffect(() => {
     >
       <DialogHeader>
         <DialogTitle className="text-lg font-bold">{job.job_title}</DialogTitle>
-        <DialogDescription>{job.company_name}</DialogDescription>
+        <DialogDescription className="flex flex-col gap-1">
+          {job.company_name}
+          <Link href={job.company_website || "#"}>{job.company_website || ""}</Link>
+          {job.company_location || ""}
+        </DialogDescription>
       </DialogHeader>
 
       {/* Badges: Status, Work Setup, and Employment Type */}
@@ -58,23 +64,25 @@ useEffect(() => {
         <Badge className="py-3">{job.employment_type}</Badge>
       </div>
       <div className="space-y-4 overflow-y-auto pr-4">
-        <section className="flex gap-2">
-          <Label htmlFor="contact" className="font-bold uppercase">
-            Contact:
-          </Label>
-          <p className="whitespace-pre-wrap" id="contact">
-            {job.contact ?? "N/A"}
-          </p>
-        </section>
+        <div className="flex justify-between">
+          <section className="flex gap-2">
+            <Label htmlFor="contact" className="font-bold uppercase">
+              Contact:
+            </Label>
+            <p className="whitespace-pre-wrap" id="contact">
+              {job.contact || "N/A"}
+            </p>
+          </section>
 
-        <section className="flex gap-2">
-          <Label htmlFor="salary" className="font-bold uppercase">
-            Salary:
-          </Label>
-          <p className="whitespace-pre-wrap" id="salary">
-            {job.currency} {job.salary}
-          </p>
-        </section>
+          <section className="flex gap-2">
+            <Label htmlFor="salary" className="font-bold uppercase">
+              Salary:
+            </Label>
+            <p className="whitespace-pre-wrap" id="salary">
+              {job.currency} {job.salary}
+            </p>
+          </section>
+        </div>
 
         <section>
           <Label
@@ -120,7 +128,7 @@ useEffect(() => {
             Additional Notes
           </Label>
           <p className="whitespace-pre-wrap" id="notes">
-            {job.notes ?? "N/A"}
+            {job.additional_notes ?? "N/A"}
           </p>
         </section>
 
@@ -141,7 +149,11 @@ useEffect(() => {
             Resume
           </Label>
           {resumeUrl ? (
-            <iframe src={resumeUrl} className="w-full h-250 mt-2" title="Resume preview"/>
+            <iframe
+              src={resumeUrl}
+              className="w-full h-250 mt-2"
+              title="Resume preview"
+            />
           ) : (
             <p>Loading resume...</p>
           )}
