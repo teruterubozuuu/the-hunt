@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseKey, supabaseUrl } from "./utils/supabase/supabase";
 
 export async function middleware(request: NextRequest) {
   // Create an unmodified response
@@ -9,6 +8,9 @@ export async function middleware(request: NextRequest) {
       headers: request.headers,
     },
   });
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   const supabase = createServerClient(
     supabaseUrl!,
@@ -51,5 +53,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard", "/sign-in"]
+  matcher: ["/","/dashboard", "/sign-in"]
 }

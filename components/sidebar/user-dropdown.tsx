@@ -9,7 +9,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -17,13 +17,19 @@ import { useRouter } from "next/navigation";
 
 export default function UserDropdown() {
   const { setTheme } = useTheme();
-  const supabase = createClient();
   const router = useRouter();
+
+  const preferences = [
+    { id: "light", label: "Light Mode" },
+    { id: "dark", label: "Dark Mode" },
+    { id: "system", label: "System" },
+  ];
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
+      const res = await fetch("/api/auth/sign-out", { method: "POST" });
+
+      if (!res.ok) {
         toast.error("Error signing out");
         return;
       }
@@ -32,17 +38,10 @@ export default function UserDropdown() {
       console.error("An unexpected error occurred", error);
     }
   };
-
-  const preferences = [
-    { id: "light", label: "Light Mode" },
-    { id: "dark", label: "Dark Mode" },
-    { id: "system", label: "System" },
-  ];
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="cursor-pointer">
-        <GearIcon size={25}/>
+        <GearIcon size={25} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuSub>

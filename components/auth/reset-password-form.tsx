@@ -9,11 +9,8 @@ import {
 } from "@/components/ui/card";
 import { FieldSet, Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createClient } from "@/utils/supabase/client";
-import { supabase } from "@/utils/supabase/supabase";
 import { ArrowLineLeftIcon } from "@phosphor-icons/react";
 import Link from "next/link";
-import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function ResetPasswordForm() {
