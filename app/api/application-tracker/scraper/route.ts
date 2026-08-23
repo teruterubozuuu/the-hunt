@@ -13,15 +13,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const res = await fetch(siteUrl, {
-      headers: { "User-Agent": "Mozilla/5.0" },
+    const SCRAPER_API = process.env.SCRAPER_API_KEY;
+    const apiUrl = `https://api.scraperapi.com?api_key=${SCRAPER_API}&url=${encodeURIComponent(siteUrl)}`;
+
+    const res = await fetch(apiUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
     });
 
     if (!res.ok) {
-      return NextResponse.json(
-        { success: false, message: "Fetch failed" },
-        { status: 500 },
-      );
+      const text = await res.text();
+      throw new Error(`ScraperAPI failed: ${res.status} ${text}`);
     }
 
     const html = await res.text();
@@ -50,7 +53,7 @@ Follow this exact schema:
   "job_title": string,
   "employment_type": "full-time" | "part-time" | "contract" | "contract-to-hire" | "internship" | "temporary" | "freelance",
   "company_name": string,
-  "location": string,
+  "company_location": string,
   "company_website": string,
   "contact": string,
   "job_description": string,

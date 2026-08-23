@@ -15,6 +15,7 @@ type JobEntryFormProps = {
   onSuccess?: () => void;
   onSubmit: (job: JobEntry) => void;
   job?: JobEntry;
+  siteData?: JobEntry;
 };
 
 export default function JobEntryForm({
@@ -22,6 +23,7 @@ export default function JobEntryForm({
   onSuccess,
   onSubmit,
   job,
+  siteData
 }: JobEntryFormProps) {
   const isEdit = Boolean(job?.id);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -97,7 +99,7 @@ export default function JobEntryForm({
                 id="companyName"
                 placeholder="e.g TechZ"
                 className="border-2 border-foreground"
-                defaultValue={job?.company_name}
+                defaultValue={siteData?.company_name || job?.company_name}
                 required
               />
             </Field>
@@ -110,7 +112,7 @@ export default function JobEntryForm({
                 name="contact"
                 id="contact"
                 className="border-2 border-foreground"
-                defaultValue={job?.contact}
+                defaultValue={siteData?.contact || job?.contact}
               />
             </Field>
           </div>
@@ -123,7 +125,7 @@ export default function JobEntryForm({
               id="companyWebsite"
               placeholder="Enter company website link here..."
               className="border-2 border-foreground"
-              defaultValue={job?.company_website}
+              defaultValue={siteData?.company_website || job?.company_website}
             />
           </Field>
 
@@ -135,7 +137,7 @@ export default function JobEntryForm({
               id="location"
               placeholder="Enter company location here..."
               className="border-2 border-foreground"
-              defaultValue={job?.company_location}
+              defaultValue={siteData?.company_website || job?.company_location}
             />
           </Field>
         </FieldGroup>
@@ -153,14 +155,14 @@ export default function JobEntryForm({
                 id="jobTitle"
                 placeholder="e.g Junior Web Developer"
                 className="border-2 border-foreground"
-                defaultValue={job?.job_title}
+                defaultValue={siteData?.job_title || job?.job_title}
                 required
               />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
-              <EmploymentTypeSelect defaultValue={job?.employment_type} />
+              <EmploymentTypeSelect defaultValue={siteData?.employment_type || job?.employment_type} />
             </Field>
           </div>
         </FieldGroup>
@@ -238,7 +240,7 @@ export default function JobEntryForm({
               name="jobDescription"
               placeholder="Enter job description here..."
               className="border-2 border-foreground resize-none min-h-30"
-              defaultValue={job?.job_description}
+              defaultValue={siteData?.job_description || job?.job_description}
               required
             />
           </div>
@@ -255,7 +257,7 @@ export default function JobEntryForm({
               name="jobQualifications"
               placeholder="Enter job qualifications here..."
               className="border-2 border-foreground resize-none min-h-30"
-              defaultValue={job?.job_qualifications}
+              defaultValue={ siteData?.job_qualifications || job?.job_qualifications}
               required
             />
           </div>
@@ -270,7 +272,7 @@ export default function JobEntryForm({
               name="benefits"
               placeholder="Enter job benefits here..."
               className="border-2 border-foreground resize-none min-h-30"
-              defaultValue={job?.benefits}
+              defaultValue={siteData?.benefits || job?.benefits}
             />
           </div>
         </Field>

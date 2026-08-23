@@ -50,10 +50,10 @@ export default function KanbanCardDetails({ job }: KanbanCardDetailsProps) {
     >
       <DialogHeader>
         <DialogTitle className="text-lg font-bold">{job.job_title}</DialogTitle>
-        <DialogDescription>
-          <p>{job.company_name}</p>
+        <DialogDescription className="flex flex-col gap-1">
+          {job.company_name}
           <Link href={job.company_website || "#"}>{job.company_website || ""}</Link>
-          <p>{job.company_location || ""}</p>
+          {job.company_location || ""}
         </DialogDescription>
       </DialogHeader>
 

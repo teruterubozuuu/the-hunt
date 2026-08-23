@@ -112,7 +112,12 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
                   setItems((prev) => [...prev, newJob]);
                 }}
               />
-              <AddJobEntryFromURL />
+              <AddJobEntryFromURL 
+                onJobCreated={(newJob) => {
+                  if (!newJob) return;
+                  setItems((prev)=> [...prev, newJob])
+                }}
+              />
             </div>
           </KanbanContainer>
         ))}
