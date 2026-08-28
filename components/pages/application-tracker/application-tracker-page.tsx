@@ -21,6 +21,17 @@ type ApplicationTrackerProps = {
 export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) {
   const isMobile = useIsMobile();
   const [view, setView] = useState<"kanban" | "list">("kanban");
+  const [items, setItems] = useState(jobs);
+
+    const handleEntryDeleted = (jobId: string) => {
+      setItems((prev) => prev.filter((job) => job.id !== jobId));
+    };
+  
+    const handleEntryUpdated = (updatedJob: JobEntry) => {
+      setItems((prev) =>
+        prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
+      );
+    };
 
   // Force list whenever view is on mobile
   useEffect(()=>{
@@ -67,10 +78,10 @@ export default function ApplicationTrackerPage({jobs}: ApplicationTrackerProps) 
         </Dialog>
       </div>
       <TabsContent value="kanban">
-        <KanbanView jobs={jobs}/>
+        <KanbanView jobs={jobs} onDelete={handleEntryDeleted} onUpdate={handleEntryUpdated}/>
       </TabsContent>
       <TabsContent value="list">
-        <ListView />
+        <ListView jobs={jobs} onDelete={handleEntryDeleted} onUpdate={handleEntryUpdated}/>
       </TabsContent>
     </Tabs>
   );

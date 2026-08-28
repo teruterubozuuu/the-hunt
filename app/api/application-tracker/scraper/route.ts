@@ -58,7 +58,6 @@ Follow this exact schema:
   "contact": string,
   "job_description": string,
   "job_qualifications": string,
-  "status": "to-apply",
   "work_setup": "onsite" | "hybrid" | "remote",
   "currency": string,
   "salary": string,

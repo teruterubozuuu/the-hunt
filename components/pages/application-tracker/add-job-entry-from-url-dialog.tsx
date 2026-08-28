@@ -103,7 +103,6 @@ export default function AddJobEntryFromURL({ onJobCreated }: Props) {
             : "",
         )}
       >
-        {" "}
         <DialogHeader>
           <DialogTitle>Enter Job Link</DialogTitle>
           <DialogDescription>

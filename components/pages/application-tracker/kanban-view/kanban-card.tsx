@@ -10,7 +10,7 @@ import {
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useDraggable } from "@dnd-kit/react";
-import KanbanCardDetails from "./kanban-card-details";
+import JobDetails from "../job-details";
 import { EyeIcon } from "@phosphor-icons/react";
 import CardDropdownMenu from "../card-dropdown-menu";
 import Link from "next/link";
@@ -56,8 +56,10 @@ export default function KanbanCard({
         </div>
         <CardDescription>
           <Link
-           href={job.company_website ?? "#"}
-           className={job.company_website ? "hover:underline" : ""}          
+            href={job.company_website ?? "#"}
+            className={job.company_website ? "hover:underline" : ""}
+            target="_blank"
+            rel="noopen noreferrer"
           >
             {job.company_name}
           </Link>
@@ -69,7 +71,11 @@ export default function KanbanCard({
         )}
       </CardHeader>
       <CardContent className="flex flex-col">
-        {job.additional_notes && <p className="mb-2"><b>Note:</b> {job.additional_notes}</p>}
+        {job.additional_notes && (
+          <p className="mb-2">
+            <b>Note:</b> {job.additional_notes}
+          </p>
+        )}
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>
@@ -80,15 +86,8 @@ export default function KanbanCard({
               {job.employment_type}
             </Badge>
           </div>
-          <Dialog>
-            <DialogTrigger
-              className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs"
-              title="View Details"
-            >
-              <EyeIcon size={15} />
-            </DialogTrigger>
-            <KanbanCardDetails job={job} />
-          </Dialog>
+
+          <JobDetails job={job} onDelete={onDeleted} onUpdate={onUpdated} />
         </div>
       </CardContent>
     </Card>

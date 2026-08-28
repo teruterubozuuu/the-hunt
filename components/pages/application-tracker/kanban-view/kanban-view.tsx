@@ -15,22 +15,15 @@ import { toast } from "sonner";
 
 type KanbanViewProps = {
   jobs: JobEntry[];
+  onDelete: (jobId: string)=> void;
+  onUpdate: (jobs: JobEntry)=> void;
 };
 
 type JobStatus = JobEntry["status"];
 
-export default function KanbanView({ jobs }: KanbanViewProps) {
+export default function KanbanView({ jobs, onDelete, onUpdate }: KanbanViewProps) {
   const [items, setItems] = useState(jobs);
 
-  const handleEntryDeleted = (jobId: string) => {
-    setItems((prev) => prev.filter((job) => job.id !== jobId));
-  };
-
-  const handleEntryUpdated = (updatedJob: JobEntry) => {
-    setItems((prev) =>
-      prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
-    );
-  };
 
   const handleDragEnd = async (e: DragEndEvent) => {
     if (e.canceled) return;
@@ -97,8 +90,8 @@ export default function KanbanView({ jobs }: KanbanViewProps) {
                     <KanbanCard
                       key={job.id}
                       job={job}
-                      onDeleted={handleEntryDeleted}
-                      onUpdated={handleEntryUpdated}
+                      onDeleted={onDelete}
+                      onUpdated={onUpdate}
                     />
                   ))
               )}
