@@ -65,12 +65,11 @@ export default function JobDetails({
       </DialogTrigger>
       <DialogContent
         className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen px-5"
-        initialFocus={false}
         showCloseButton={false}
       >
         <DialogHeader>
           <div className="flex justify-between items-center">
-            <DialogTitle className="text-lg font-bold">
+            <DialogTitle className="text-lg font-bold" title={job.job_link}>
               <Link
                 href={job.job_link}
                 className="hover:underline"
