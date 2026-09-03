@@ -91,7 +91,10 @@ export default function AddJobEntryFromURL({ onJobCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger className="bg-primary p-2 text-primary-foreground rounded-md cursor-pointer hover:opacity-90" title="Auto-fill">
+      <DialogTrigger
+        className="bg-primary p-2 text-primary-foreground rounded-md cursor-pointer hover:opacity-90"
+        title="Auto-fill"
+      >
         <LinkIcon weight="bold" size={13} />
       </DialogTrigger>
 
@@ -136,7 +139,6 @@ export default function AddJobEntryFromURL({ onJobCreated }: Props) {
           </p>
         )}
 
-
         {!isLoading && siteData && (
           <div className="overflow-y-auto pr-2">
             <JobEntryForm
@@ -152,7 +154,9 @@ export default function AddJobEntryFromURL({ onJobCreated }: Props) {
         )}
         {!isLoading && siteData && (
           <DialogFooter>
-            <Button type="submit" form="job-entry-form">Add Entry</Button>
+            <Button type="submit" form="job-entry-form">
+              Add Entry
+            </Button>
           </DialogFooter>
         )}
       </DialogContent>
