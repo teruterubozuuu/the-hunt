@@ -8,7 +8,7 @@ export default function BottomMenu() {
   const isActive = useActivePath();
 
   return (
-    <div className='md:hidden fixed bottom-0 w-full border-t-2 border-foreground p-2'>
+    <div className='md:hidden fixed bottom-0 w-full border-t-2 border-foreground p-2 bg-white'>
         <div className='flex justify-around'>
             {menuItem.map((item)=>(
                 <Link href={item.path} key={item.id}>
