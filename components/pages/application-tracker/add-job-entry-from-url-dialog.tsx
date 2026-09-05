@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { LinkIcon, CircleDashedIcon } from "@phosphor-icons/react";
+import { LinkIcon, CircleDashedIcon, MagicWandIcon } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import JobEntryForm from "./job-entry-form";
@@ -92,7 +92,7 @@ export default function AddJobEntryFromURL({ onJobCreated }: Props) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger className="bg-primary p-2 text-primary-foreground rounded-md cursor-pointer hover:opacity-90" title="Auto-fill">
-        <LinkIcon weight="bold" size={13} />
+        <MagicWandIcon weight="bold" size={13}/>
       </DialogTrigger>
 
       <DialogContent
