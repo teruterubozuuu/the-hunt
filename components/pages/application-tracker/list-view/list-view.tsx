@@ -26,7 +26,7 @@ export default function ListView({ jobs, onUpdate, onDelete }: ListViewProps) {
         const filteredJobs = jobs.filter((job) => job.status === stat.id);
 
         return (
-          <Accordion key={stat.id} defaultValue={["to-apply"]}>
+          <Accordion key={stat.id} defaultValue={["applied"]}>
             <AccordionItem value={stat.id} className="py-1">
               <AccordionTrigger
                 className={"cursor-pointer px-2  bg-primary text-secondary"}
