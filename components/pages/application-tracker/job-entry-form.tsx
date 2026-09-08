@@ -9,6 +9,7 @@ import { jobEntrySchema } from "@/lib/schema/application-tracker.schema";
 import { toast } from "sonner";
 import { FormEvent, useEffect, useState } from "react";
 import { JobEntry } from "@/lib/types/job-entry";
+import { totalmem } from "os";
 
 type JobEntryFormProps = {
   defaultStatus?: string;
@@ -31,6 +32,7 @@ export default function JobEntryForm({
   const [status, setStatus] = useState<string | undefined>(
     job?.status ?? defaultStatus,
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!resumeFile) return;
@@ -54,12 +56,12 @@ export default function JobEntryForm({
       return;
     }
 
+    setIsLoading(true);
+    const toastId = toast.loading(isEdit ? "Updating job entry" : "Creating job entry")
     try {
       const url = isEdit
         ? `/api/application-tracker/update-job-entry/${job!.id}`
         : "/api/application-tracker/create-job-entry";
-
-      console.log("PATCH URL:", url);
 
       const res = await fetch(url, {
         method: isEdit ? "PATCH" : "POST",
@@ -69,6 +71,7 @@ export default function JobEntryForm({
       if (!res.ok) {
         toast.error(
           isEdit ? "Failed to update job entry" : "Failed to create job entry",
+          {id: toastId}
         );
         return;
       }
@@ -76,13 +79,17 @@ export default function JobEntryForm({
       const { jobEntry } = await res.json();
       onSubmit(jobEntry);
 
-      toast.success(isEdit ? "Job entry updated" : "Job entry created");
+      setIsLoading(false);
+      toast.success(isEdit ? "Job entry updated" : "Job entry created", {id: toastId});
       onSuccess?.();
     } catch (error) {
       console.error("An unexpected error occurred", error);
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred", {id: toastId});
+    } finally{
+      setIsLoading(false);
     }
   };
+
   return (
     <form id="job-entry-form" onSubmit={handleSubmit}>
       <FieldSet>

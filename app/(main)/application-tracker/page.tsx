@@ -2,7 +2,6 @@ import ApplicationTrackerPage from "@/components/pages/application-tracker/appli
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { toast } from "sonner";
 
 export default async function Tracker() {
   const cookieStore = await cookies();
@@ -26,7 +25,6 @@ export default async function Tracker() {
 
   if (jobEntryError) {
     console.error("Failed to fetch job entries", jobEntryError);
-    toast.error("Failed to fetch job entries");
     return;
   }
 
