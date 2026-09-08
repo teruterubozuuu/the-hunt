@@ -13,17 +13,24 @@ import { EyeIcon } from "@phosphor-icons/react";
 import JobDetails from "../job-details";
 import CardDropdownMenu from "../card-dropdown-menu";
 import Link from "next/link";
+import AddJobEntryDialog from "../add-job-entry-dialog";
+import AddJobEntryFromURL from "../add-job-entry-from-url-dialog";
+import { Dispatch, SetStateAction, useState } from "react";
 
 type ListViewProps = {
   jobs: JobEntry[];
   onUpdate: (jobs: JobEntry) => void;
   onDelete: (jobId: string) => void;
+  items: JobEntry[];
+  setItems: Dispatch<SetStateAction<JobEntry[]>>;
 };
-export default function ListView({ jobs, onUpdate, onDelete }: ListViewProps) {
+export default function ListView({ jobs, onUpdate, onDelete, items, setItems }: ListViewProps) {
+  const view = "list";
+
   return (
     <div className="h-screen overflow-y-auto md:pb-20 pb-40">
       {status.map((stat) => {
-        const filteredJobs = jobs.filter((job) => job.status === stat.id);
+        const filteredJobs = items.filter((job) => job.status === stat.id);
 
         return (
           <Accordion key={stat.id} defaultValue={["applied"]}>
@@ -33,9 +40,32 @@ export default function ListView({ jobs, onUpdate, onDelete }: ListViewProps) {
               >
                 <div className="flex w-full items-center justify-between">
                   <span className="font-bold uppercase">{stat.type}</span>
-                  <span className="pr-3 text-muted-foreground">
-                    {filteredJobs.length}
-                  </span>
+                  <div
+                    className="flex items-center"
+                    onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
+                  >
+                    <span className="pr-3 text-muted-foreground">
+                      {filteredJobs.length}
+                    </span>
+                    <AddJobEntryDialog
+                      defaultStatus={stat.id}
+                      onJobCreated={(newJob) => {
+                        if (!newJob) {
+                          setItems((prev) => [...prev, newJob]);
+                        }
+                      }}
+                      view={view}
+                    />
+                    <AddJobEntryFromURL
+                      onJobCreated={(newJob) => {
+                        if (!newJob) {
+                          setItems((prev) => [...prev, newJob]);
+                        }
+                      }}
+                      view={view}
+                    />
+                  </div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 py-2">

@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusIcon } from "@phosphor-icons/react";
+import { PlusIcon, PlusSquareIcon } from "@phosphor-icons/react";
 import JobEntryForm from "./job-entry-form";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -16,15 +16,17 @@ import { JobEntry } from "@/lib/types/job-entry";
 type AddJobEntryDialogProps = {
   defaultStatus?: string;
   onJobCreated: (job: JobEntry) => void;
+  view: string;
 }
 
-export default function AddJobEntryDialog({defaultStatus, onJobCreated} : AddJobEntryDialogProps) {
+export default function AddJobEntryDialog({defaultStatus, onJobCreated, view} : AddJobEntryDialogProps) {
     const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="flex items-center gap-2 hover:bg-primary/5 text-secondary-foreground/40 font-semibold p-2 w-full rounded-md cursor-pointer text-xs">
-        <PlusIcon weight="bold" /> Add a Job Entry
+      <DialogTrigger className="flex items-center gap-2 hover:bg-primary/5 text-secondary-foreground/40 font-semibold p-2 w-full rounded-md cursor-pointer text-xs" title="Add job entry">
+        <PlusIcon weight="bold" size={15} className={view === "list" ? "text-secondary opacity-40 hover:opacity-100 transition-all" : ""}/>
+        {view === "kanban" && <span>Add a Job Entry</span>}
       </DialogTrigger>
       <DialogContent className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen">
         <DialogHeader className="p-6 py-2">
