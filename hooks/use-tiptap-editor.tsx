@@ -18,7 +18,6 @@ export function RichTextField({
   name,
   defaultValue = "",
   placeholder,
-  required,
 }: RichTextFieldProps) {
   const [value, setValue] = useState(defaultValue);
  
