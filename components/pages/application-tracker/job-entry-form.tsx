@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { FormEvent, useEffect, useState } from "react";
 import { JobEntry } from "@/lib/types/job-entry";
 import { totalmem } from "os";
+import { RichTextField } from "@/hooks/use-tiptap-editor";
 
 type JobEntryFormProps = {
   defaultStatus?: string;
@@ -24,7 +25,7 @@ export default function JobEntryForm({
   onSuccess,
   onSubmit,
   job,
-  siteData
+  siteData,
 }: JobEntryFormProps) {
   const isEdit = Boolean(job?.id);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -57,7 +58,9 @@ export default function JobEntryForm({
     }
 
     setIsLoading(true);
-    const toastId = toast.loading(isEdit ? "Updating job entry" : "Creating job entry")
+    const toastId = toast.loading(
+      isEdit ? "Updating job entry" : "Creating job entry",
+    );
     try {
       const url = isEdit
         ? `/api/application-tracker/update-job-entry/${job!.id}`
@@ -71,7 +74,7 @@ export default function JobEntryForm({
       if (!res.ok) {
         toast.error(
           isEdit ? "Failed to update job entry" : "Failed to create job entry",
-          {id: toastId}
+          { id: toastId },
         );
         return;
       }
@@ -80,12 +83,14 @@ export default function JobEntryForm({
       onSubmit(jobEntry);
 
       setIsLoading(false);
-      toast.success(isEdit ? "Job entry updated" : "Job entry created", {id: toastId});
+      toast.success(isEdit ? "Job entry updated" : "Job entry created", {
+        id: toastId,
+      });
       onSuccess?.();
     } catch (error) {
       console.error("An unexpected error occurred", error);
-      toast.error("An unexpected error occurred", {id: toastId});
-    } finally{
+      toast.error("An unexpected error occurred", { id: toastId });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -169,7 +174,9 @@ export default function JobEntryForm({
 
             <Field>
               <FieldLabel htmlFor="employment-type">Employment Type</FieldLabel>
-              <EmploymentTypeSelect defaultValue={siteData?.employment_type || job?.employment_type} />
+              <EmploymentTypeSelect
+                defaultValue={siteData?.employment_type || job?.employment_type}
+              />
             </Field>
           </div>
         </FieldGroup>
@@ -242,11 +249,9 @@ export default function JobEntryForm({
             Job Description <span className="text-red-600">*</span>
           </FieldLabel>
           <div className="grid w-full">
-            <Textarea
-              id="jobDescription"
+            <RichTextField
               name="jobDescription"
               placeholder="Enter job description here..."
-              className="border-2 border-foreground resize-none min-h-30"
               defaultValue={siteData?.job_description || job?.job_description}
               required
             />
@@ -259,12 +264,12 @@ export default function JobEntryForm({
             Job Qualifications <span className="text-red-600">*</span>
           </FieldLabel>
           <div className="grid w-full">
-            <Textarea
-              id="jobQualifications"
+            <RichTextField
               name="jobQualifications"
               placeholder="Enter job qualifications here..."
-              className="border-2 border-foreground resize-none min-h-30"
-              defaultValue={ siteData?.job_qualifications || job?.job_qualifications}
+              defaultValue={
+                siteData?.job_qualifications || job?.job_qualifications
+              }
               required
             />
           </div>
@@ -274,11 +279,9 @@ export default function JobEntryForm({
         <Field>
           <FieldLabel htmlFor="benefits">Benefits</FieldLabel>
           <div className="grid w-full">
-            <Textarea
-              id="benefits"
+            <RichTextField
               name="benefits"
               placeholder="Enter job benefits here..."
-              className="border-2 border-foreground resize-none min-h-30"
               defaultValue={siteData?.benefits || job?.benefits}
             />
           </div>
@@ -288,11 +291,9 @@ export default function JobEntryForm({
         <Field>
           <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
           <div className="grid w-full">
-            <Textarea
-              id="additionalNotes"
+            <RichTextField
               name="additionalNotes"
               placeholder="Enter additional notes here..."
-              className="border-2 border-foreground resize-none min-h-30"
               defaultValue={job?.additional_notes}
             />
           </div>

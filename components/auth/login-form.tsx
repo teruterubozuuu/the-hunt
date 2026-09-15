@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { loginSchema } from "@/lib/schema/user-details.schema";
 import { toast } from "sonner";
-import { CircleNotchIcon } from "@phosphor-icons/react";
+import { BriefcaseIcon, CircleNotchIcon } from "@phosphor-icons/react";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -74,7 +74,8 @@ export default function LoginForm() {
   return (
     <Card className="w-full max-w-sm border-2 border-foreground">
       <CardHeader className="text-center pt-4">
-        <CardTitle className="font-bold text-xl">
+        <CardTitle className="flex flex-col items-center gap-2 font-bold text-xl">
+          <BriefcaseIcon size={30}/>
           Welcome back to The Hunt!
         </CardTitle>
         <CardDescription>Sign in to your account</CardDescription>

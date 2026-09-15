@@ -137,7 +137,6 @@ export default function AddJobEntryFromURL({ onJobCreated, view }: Props) {
           </p>
         )}
 
-
         {!isLoading && siteData && (
           <div className="overflow-y-auto pr-2">
             <JobEntryForm
@@ -153,7 +152,9 @@ export default function AddJobEntryFromURL({ onJobCreated, view }: Props) {
         )}
         {!isLoading && siteData && (
           <DialogFooter>
-            <Button type="submit" form="job-entry-form">Add Entry</Button>
+            <Button type="submit" form="job-entry-form">
+              Add Entry
+            </Button>
           </DialogFooter>
         )}
       </DialogContent>

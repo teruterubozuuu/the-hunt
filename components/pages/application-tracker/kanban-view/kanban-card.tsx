@@ -7,14 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useDraggable } from "@dnd-kit/react";
 import JobDetails from "../job-details";
-import { EyeIcon } from "@phosphor-icons/react";
 import CardDropdownMenu from "../card-dropdown-menu";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import DOMPurify from "dompurify";
 
 type KanbanCardProps = {
   job: JobEntry;
@@ -72,10 +70,21 @@ export default function KanbanCard({
       </CardHeader>
       <CardContent className="flex flex-col">
         {job.additional_notes && (
-          <p className="mb-2">
-            <b>Note:</b> {job.additional_notes}
-          </p>
+          <div
+            className="
+              mt-2
+              [&_ul]:list-disc
+              [&_ul]:pl-6
+              [&_ol]:list-decimal
+              [&_ol]:pl-6
+              [&_li]:my-1
+            "
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(`<span><b>Note: </b></span>${job.additional_notes}` || "<p>N/A</p>"),
+            }}
+          />
         )}
+
         <div className="flex justify-between items-center">
           <div className="flex gap-1">
             <Badge>{job.work_setup}</Badge>

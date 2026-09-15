@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import CardDropdownMenu from "./card-dropdown-menu";
 import { EyeIcon, X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import DOMPurify from "dompurify";
 
 type JobDetailsProps = {
   job: JobEntry;
@@ -84,9 +85,9 @@ export default function JobDetails({
                 onDeleted={onDelete}
                 onUpdated={onUpdate}
               />
-              <Button 
+              <Button
                 className="cursor-pointer bg-transparent hover:bg-primary/10 text-primary p-1! rounded-md h-auto!"
-                onClick={()=>setOpen(false)}
+                onClick={() => setOpen(false)}
               >
                 <X size={15} />
               </Button>
@@ -135,9 +136,19 @@ export default function JobDetails({
             >
               Job Description
             </Label>
-            <p className="whitespace-pre-wrap mt-2" id="job-description">
-              {job.job_description}
-            </p>
+            <div
+              className="
+    prose prose-sm max-w-none
+    [&_ul]:list-disc
+    [&_ul]:pl-6
+    [&_ol]:list-decimal
+    [&_ol]:pl-6
+    [&_li]:my-1
+  "
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(job.job_description),
+              }}
+            />
           </section>
 
           <section>
@@ -147,9 +158,20 @@ export default function JobDetails({
             >
               Job Qualifications
             </Label>
-            <p className="whitespace-pre-wrap mt-2" id="job-qualifications">
-              {job.job_qualifications}
-            </p>
+            <div
+              id="job-qualifications"
+              className="
+    mt-2
+    [&_ul]:list-disc
+    [&_ul]:pl-6
+    [&_ol]:list-decimal
+    [&_ol]:pl-6
+    [&_li]:my-1
+  "
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(job.job_qualifications),
+              }}
+            />
           </section>
 
           <section>
@@ -159,9 +181,20 @@ export default function JobDetails({
             >
               Benefits
             </Label>
-            <p className="whitespace-pre-wrap" id="benefits">
-              {job.benefits ?? "N/A"}
-            </p>
+            <div
+              id="benefits"
+              className="
+    mt-2
+    [&_ul]:list-disc
+    [&_ul]:pl-6
+    [&_ol]:list-decimal
+    [&_ol]:pl-6
+    [&_li]:my-1
+  "
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(job.benefits || "<p>N/A</p>"),
+              }}
+            />
           </section>
 
           <section>
@@ -171,9 +204,14 @@ export default function JobDetails({
             >
               Additional Notes
             </Label>
-            <p className="whitespace-pre-wrap" id="notes">
-              {job.additional_notes ?? "N/A"}
-            </p>
+            <div
+              id="notes"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  job.additional_notes || "<p>N/A</p>",
+                ),
+              }}
+            />
           </section>
 
           <section>
