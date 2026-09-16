@@ -65,8 +65,7 @@ export default function JobDetails({
         <EyeIcon size={15} />
       </DialogTrigger>
       <DialogContent
-        className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen px-5"
-        showCloseButton={false}
+        className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 max-w-screen px-5 h-svh max-h-svh md:h-auto" showCloseButton={false}
       >
         <DialogHeader>
           <div className="flex justify-between items-center">
