@@ -21,6 +21,8 @@ type ListViewProps = {
   onDelete: (jobId: string) => void;
   items: JobEntry[];
   setItems: Dispatch<SetStateAction<JobEntry[]>>;
+selectedJobId: string | null;
+onSelectedJobChange: (jobId: string | null) => void;
 };
 export default function ListView({
   jobs,
@@ -28,6 +30,8 @@ export default function ListView({
   onDelete,
   items,
   setItems,
+  selectedJobId,
+  onSelectedJobChange,
 }: ListViewProps) {
   const view = "list";
 
@@ -139,6 +143,10 @@ export default function ListView({
                           job={job}
                           onDelete={onDelete}
                           onUpdate={onUpdate}
+                          open={job.id === selectedJobId}
+                          onOpenChange={(open) => {
+                            onSelectedJobChange(open ? job.id : null);
+                          }}
                         />
                       </div>
                     </div>

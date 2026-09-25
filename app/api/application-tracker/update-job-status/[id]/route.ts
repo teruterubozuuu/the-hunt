@@ -53,7 +53,7 @@ export async function PATCH(
     // Get current job
     const { data: existingJob } = await supabase
       .from("job_entries")
-      .select("applied_at")
+      .select("applied_at, job_title, company_name, status")
       .eq("id", id)
       .eq("user_id", user.id)
       .single();
@@ -94,6 +94,23 @@ export async function PATCH(
       console.error(error);
       return NextResponse.json(
         { succcess: false, message: "Job status update failed" },
+        { status: 500 },
+      );
+    }
+
+    const { error: activityError } = await supabase
+      .from("activity_feed")
+      .insert({
+        user_id: user.id,
+        job_entry_id: id,
+        activity: `Status of ${existingJob.job_title} at ${existingJob.company_name} changed from ${existingJob.status} to ${updateData.status}`,
+        link: `/application-tracker?jobId=${id}`,
+      });
+
+    if (activityError) {
+      console.error("Failed to create activity", activityError);
+      return NextResponse.json(
+        { success: false, message: "Failed to create activity" },
         { status: 500 },
       );
     }

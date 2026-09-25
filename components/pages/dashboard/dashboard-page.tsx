@@ -24,6 +24,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import StatCards from "./stat-cards";
+import StatusBreakdown from "./status-breakdown";
+import ApplicationsOverTime from "./applications-over-time";
+import ActivityFeed from "./activity-feed";
+import InterviewSchedule from "./interview-schedule";
+import { ActivityFeedProps } from "@/lib/types/activity-feed";
 
 type JobEntry = {
   id: string;
@@ -33,9 +39,10 @@ type JobEntry = {
 
 type DashboardPageProps = {
   data: JobEntry[];
+  activityData: ActivityFeedProps[];
 };
 
-export default function DashboardPage({ data }: DashboardPageProps) {
+export default function DashboardPage({ data, activityData }: DashboardPageProps) {
   /**
    * Filters data to get their respective lengths
    * and overall response rate
@@ -174,98 +181,26 @@ export default function DashboardPage({ data }: DashboardPageProps) {
        * Top-line Stat Cards
        */}
       <section className="grid md:grid-cols-5 grid-cols-2 gap-3">
-        {filteredData.map((item) => (
-          <Card key={item.id} className="border-2 border-foreground">
-            <CardContent className="flex justify-between items-center">
-              <div className="space-y-2">
-                <h2 className="md:text-md text-xs text-muted-foreground font-medium">
-                  {item.id}
-                </h2>
-                <h3 className="md:text-lg font-bold">{item.data}</h3>
-              </div>
-              <span className="md:text-3xl text-xl">{item.icon}</span>
-            </CardContent>
-          </Card>
-        ))}
+        <StatCards filteredData={filteredData} />
       </section>
 
       <section>
         <div className="flex md:flex-row flex-col gap-3">
-          <Card className="border-2 border-foreground flex-2">
-            <CardHeader>
-              <CardTitle className="font-bold">Applications</CardTitle>
-              <CardContent>
-                <ChartContainer config={lineChartConfig}           className="aspect-auto h-62.5 w-full"
->
-                  <LineChart data={lineChartData}>
-                    <CartesianGrid vertical={false} />
+          <ApplicationsOverTime
+            lineChartConfig={lineChartConfig}
+            lineChartData={lineChartData}
+          />
+          <StatusBreakdown
+            pieChartConfig={pieChartConfig}
+            pieChartData={pieChartData}
+          />
+        </div>
+      </section>
 
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(date) =>
-                        new Date(`${date}T00:00:00`).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                          },
-                        )
-                      }
-                    />
-
-                    <ChartTooltip content={
-                      <ChartTooltipContent 
-                        labelFormatter={(label)=>
-                          new Date(`${label}T00:00:00`).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })
-                        }
-                      />
-                    } 
-                    />
-
-                    <Line
-                      type="monotone"
-                      dataKey="applications"
-                      stroke="var(--chart-2)"
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ChartContainer>
-              </CardContent>
-            </CardHeader>
-          </Card>
-
-          <Card className="border-2 border-foreground flex-1">
-            <CardHeader>
-              <CardTitle className="font-bold">Status Breakdown</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={pieChartConfig} className="mx-auto">
-                <PieChart>
-                  <ChartTooltip
-                    cursor={false}
-                    content={
-                      <ChartTooltipContent
-                        nameKey="applicationCount"
-                        hideLabel
-                      />
-                    }
-                  />
-                  <Pie data={pieChartData} dataKey="applicationCount" />
-                  <ChartLegend
-                    content={<ChartLegendContent nameKey="status" />}
-                    className="-translate-y-2 flex-wrap gap-2 *:basis-1/4 *:justify-center"
-                  />
-                </PieChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+      <section>
+        <div className="flex md:flex-row flex-col gap-3">
+          <ActivityFeed activityData={activityData}/>
+          <InterviewSchedule />
         </div>
       </section>
     </div>

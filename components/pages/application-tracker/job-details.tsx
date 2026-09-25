@@ -22,15 +22,23 @@ type JobDetailsProps = {
   job: JobEntry;
   onDelete: (jobId: string) => void;
   onUpdate: (job: JobEntry) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export default function JobDetails({
   job,
   onDelete,
   onUpdate,
+  open,
+  onOpenChange,
 }: JobDetailsProps) {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+
+
+const dialogOpen = open ?? localOpen;
+const handleOpenChange = onOpenChange ?? setLocalOpen;
 
   useEffect(() => {
     const fetchUrl = async () => {
@@ -57,7 +65,7 @@ export default function JobDetails({
   }, [job.resume]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger
         className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs"
         title="View Details"
@@ -65,7 +73,7 @@ export default function JobDetails({
         <EyeIcon size={15} />
       </DialogTrigger>
       <DialogContent
-        className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 max-w-screen px-5 h-svh max-h-svh md:h-auto" showCloseButton={false}
+        className="fixed! inset-0! top-0! left-0! translate-x-0! translate-y-0! w-screen! max-w-none! h-svh max-h-svh rounded-none! px-5 flex flex-col" showCloseButton={false}
       >
         <DialogHeader>
           <div className="flex justify-between items-center">
@@ -86,7 +94,7 @@ export default function JobDetails({
               />
               <Button
                 className="cursor-pointer bg-transparent hover:bg-primary/10 text-primary p-1! rounded-md h-auto!"
-                onClick={() => setOpen(false)}
+                onClick={() => handleOpenChange(false)}
               >
                 <X size={15} />
               </Button>

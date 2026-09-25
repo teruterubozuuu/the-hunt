@@ -20,6 +20,8 @@ type KanbanViewProps = {
   onDragEnd: (e: DragEndEvent) => void;
   items: JobEntry[];
   setItems: Dispatch<SetStateAction<JobEntry[]>>;
+selectedJobId: string | null;
+onSelectedJobChange: (jobId: string | null) => void;
 };
 
 export default function KanbanView({
@@ -29,6 +31,8 @@ export default function KanbanView({
   items,
   setItems,
   onDragEnd,
+  selectedJobId,
+  onSelectedJobChange
 }: KanbanViewProps) {
   const view = "kanban";
 
@@ -60,7 +64,10 @@ export default function KanbanView({
                         job={job}
                         onDeleted={onDelete}
                         onUpdated={onUpdate}
-                      />
+                        dialogOpen={job.id === selectedJobId}
+                        onDialogChange={(open) => {
+                          onSelectedJobChange(open ? job.id : null);
+                        }}                      />
                     ))
                 )}
               </div>

@@ -18,22 +18,38 @@ import {
 } from "@/components/ui/dialog";
 import { JobEntry } from "@/lib/types/job-entry";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DragEndEvent } from "@dnd-kit/react";
 
 type ApplicationTrackerProps = {
   jobs: JobEntry[];
+  initialJobId?: string;
 };
 
 type JobStatus = JobEntry["status"];
 
 export default function ApplicationTrackerPage({
   jobs,
+  initialJobId,
 }: ApplicationTrackerProps) {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
+  const router = useRouter();
   const [view, setView] = useState<"kanban" | "list">("kanban");
   const [items, setItems] = useState(jobs);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(
+    initialJobId ?? null,
+  );
+
+  const handleSelectedJobChange = (jobId: string | null) => {
+    setSelectedJobId(jobId);
+
+    if (jobId === null) {
+      router.replace(pathname, { scroll: false });
+    }
+  };
 
   const handleEntryDeleted = (jobId: string) => {
     setItems((prev) => prev.filter((job) => job.id !== jobId));
@@ -145,6 +161,8 @@ export default function ApplicationTrackerPage({
           onDragEnd={handleDragEnd}
           items={items}
           setItems={setItems}
+          selectedJobId={selectedJobId}
+          onSelectedJobChange={handleSelectedJobChange}
         />
       </TabsContent>
       <TabsContent value="list">
@@ -154,6 +172,8 @@ export default function ApplicationTrackerPage({
           onUpdate={handleEntryUpdated}
           items={items}
           setItems={setItems}
+          selectedJobId={selectedJobId}
+          onSelectedJobChange={handleSelectedJobChange}
         />
       </TabsContent>
     </Tabs>

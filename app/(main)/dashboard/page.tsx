@@ -16,7 +16,7 @@ export default async function Dashboard() {
     redirect("/sign-in");
   }
 
-  // 2. Fetch data
+  // 2. Fetch job entry data
   const { data, error } = await supabase
     .from("job_entries")
     .select("id, user_id, status, applied_at")
@@ -27,12 +27,25 @@ export default async function Dashboard() {
     return;
   }
 
+  // 3. Fetch activity data
+  const { data: activityData, error: activityError } = await supabase
+    .from("activity_feed")
+    .select("*")
+    .eq("user_id", user.id);
+
+  if (activityError) {
+    console.error("Failed to fetch activity data", activityError);
+    return;
+  }
+
   return (
     <div className="overflow-y-auto">
       <h1 className="font-bold text-2xl">Dashboard</h1>
-      <p className="text-sm text-muted-foreground font-semibold">Track your job application analytics</p>
+      <p className="text-sm text-muted-foreground font-semibold">
+        Track your job application analytics
+      </p>
       <main className="pt-3">
-        <DashboardPage data={data} />
+        <DashboardPage data={data} activityData={activityData} />
       </main>
     </div>
   );

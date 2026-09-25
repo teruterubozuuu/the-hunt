@@ -131,6 +131,26 @@ export async function PATCH(
       );
     }
 
+    // Insert to activity feed
+
+    const { error: activityError } = await supabase
+    .from("activity_feed")
+    .insert({
+      user_id: user.id,
+      job_entry_id: id,
+      activity: `Updated entry for ${updateData.jobTitle} at ${updateData.companyName}`,
+      link: `/application-tracker?jobId=${id}`
+    })
+    .select()
+    .single();
+
+    if (activityError){
+      return NextResponse.json(
+        {success:false, message: "Failed to create activity"},
+        {status: 500}
+      )
+    };
+
     return NextResponse.json(
       { jobEntry: jobEntry[0], success: true, message: "Successfully updated entry" },
       { status: 200 },
