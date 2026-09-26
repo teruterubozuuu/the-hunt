@@ -17,7 +17,8 @@ export const jobEntrySchema = z.object({
     resume: z.instanceof(File).optional(),
     benefits: z.string().optional(),
     additionalNotes: z.string().optional(),
-    appliedDate: z.string().date().optional(),
+appliedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/).optional(),
+interviewDate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/).optional(),
 });
 
 export type JobEntryData = z.infer<typeof jobEntrySchema>;

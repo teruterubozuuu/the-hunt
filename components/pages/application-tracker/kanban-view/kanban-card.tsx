@@ -18,12 +18,16 @@ type KanbanCardProps = {
   job: JobEntry;
   onDeleted: (jobId: string) => void;
   onUpdated: (job: JobEntry) => void;
+  dialogOpen: boolean;
+  onDialogChange: (open: boolean) => void;
 };
 
 export default function KanbanCard({
   job,
   onDeleted,
   onUpdated,
+  dialogOpen,
+  onDialogChange,
 }: KanbanCardProps) {
   const { ref } = useDraggable({
     id: job.id,
@@ -37,14 +41,7 @@ export default function KanbanCard({
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle className="text-sm flex-1/2 line-clamp-2">
-            <Link
-              href={job.job_link}
-              className="hover:underline"
-              target="_blank"
-              title={job.job_link}
-            >
               {job.job_title}
-            </Link>
           </CardTitle>
           <CardDropdownMenu
             job={job}
@@ -80,7 +77,10 @@ export default function KanbanCard({
               [&_li]:my-1
             "
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(`<span><b>Note: </b></span>${job.additional_notes}` || "<p>N/A</p>"),
+              __html: DOMPurify.sanitize(
+                `<span><b>Note: </b></span>${job.additional_notes}` ||
+                  "<p>N/A</p>",
+              ),
             }}
           />
         )}
@@ -96,7 +96,13 @@ export default function KanbanCard({
             </Badge>
           </div>
 
-          <JobDetails job={job} onDelete={onDeleted} onUpdate={onUpdated} />
+          <JobDetails
+            job={job}
+            onDelete={onDeleted}
+            onUpdate={onUpdated}
+            open={dialogOpen}
+            onOpenChange={onDialogChange}
+          />
         </div>
       </CardContent>
     </Card>

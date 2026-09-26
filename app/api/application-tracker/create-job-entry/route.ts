@@ -144,10 +144,28 @@ export async function POST(req: NextRequest) {
     if (jobEntryError) {
       console.error("jobEntryError:", jobEntryError);
       return NextResponse.json(
-        { success: false, message: "An unexpected error occurred" },
+        { success: false, message: "Failed to create job entry" },
         { status: 500 },
       );
     }
+
+    const { error: activityError } = await supabase
+    .from("activity_feed")
+    .insert({
+      user_id: user.id,
+      job_entry_id: jobEntry.id,
+      activity: `New entry for ${jobTitle} at ${companyName}`,
+      link: `/application-tracker?jobId=${jobEntry.id}`
+    })
+    .select()
+    .single();
+
+    if (activityError){
+      return NextResponse.json(
+        {success:false, message: "Failed to create activity"},
+        {status: 500}
+      )
+    };
 
     return NextResponse.json(
       { jobEntry, success: true, message: "Job Entry created" },

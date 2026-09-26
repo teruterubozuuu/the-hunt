@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import ThemeProvider from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import ServiceWorkerRegistration from "@/components/service-worker-registration";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -41,6 +42,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <ServiceWorkerRegistration />
           <TooltipProvider>
             {children}
           </TooltipProvider>

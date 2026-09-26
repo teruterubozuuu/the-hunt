@@ -3,7 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export default async function Tracker() {
+export default async function Tracker({searchParams}:{searchParams: Promise<{jobId?:string}>}) {
+  const {jobId} = await searchParams;
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
@@ -28,5 +29,5 @@ export default async function Tracker() {
     return;
   }
 
-  return <ApplicationTrackerPage jobs={jobEntry} />;
+  return <ApplicationTrackerPage jobs={jobEntry} initialJobId={jobId}/>;
 }

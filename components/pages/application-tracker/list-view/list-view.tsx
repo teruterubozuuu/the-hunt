@@ -21,6 +21,8 @@ type ListViewProps = {
   onDelete: (jobId: string) => void;
   items: JobEntry[];
   setItems: Dispatch<SetStateAction<JobEntry[]>>;
+  selectedJobId: string | null;
+  onSelectedJobChange: (jobId: string | null) => void;
 };
 export default function ListView({
   jobs,
@@ -28,6 +30,8 @@ export default function ListView({
   onDelete,
   items,
   setItems,
+  selectedJobId,
+  onSelectedJobChange,
 }: ListViewProps) {
   const view = "list";
 
@@ -77,16 +81,17 @@ export default function ListView({
                   <p className="text-sm text-muted-foreground">No jobs here</p>
                 ) : (
                   filteredJobs.map((job) => (
-                    <div key={job.id} className="py-2 border-b">
-                      <div className="flex justify-between items-center">
-                        <Link
-                          className="font-medium hover:underline! no-underline!"
-                          href={job.job_link}
-                          rel="noopen noreferrer"
-                          title={job.job_link}
-                        >
-                          {job.job_title}
-                        </Link>
+                    <div
+                      key={job.id}
+                      className="py-2 border-b cursor-pointer hover:bg-muted transition-all"
+                      onClick={() => onSelectedJobChange(job.id)}
+                      title="View Details"
+                    >
+                      <div
+                        className="flex justify-between items-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <p className="font-semibold">{job.job_title}</p>
                         <CardDropdownMenu
                           job={job}
                           onDeleted={onDelete}
@@ -139,6 +144,11 @@ export default function ListView({
                           job={job}
                           onDelete={onDelete}
                           onUpdate={onUpdate}
+                          open={job.id === selectedJobId}
+                          onOpenChange={(open) => {
+                            onSelectedJobChange(open ? job.id : null);
+                          }}
+                          view={view}
                         />
                       </div>
                     </div>
