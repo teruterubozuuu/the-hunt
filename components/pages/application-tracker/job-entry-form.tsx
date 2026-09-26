@@ -34,6 +34,9 @@ export default function JobEntryForm({
     job?.status ?? defaultStatus,
   );
   const [isLoading, setIsLoading] = useState(false);
+  const showAppliedDate =
+    status === "interview" || (status === "applied" && Boolean(job?.applied_at));
+  const showInterviewDate = status === "interview";
 
   useEffect(() => {
     if (!resumeFile) return;
@@ -95,6 +98,17 @@ export default function JobEntryForm({
     }
   };
 
+  const toDateTimeLocal = (value?: string) => {
+  if (!value) return "";
+
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset() * 60000;
+
+  return new Date(date.getTime() - offset)
+    .toISOString()
+    .slice(0, 16);
+};
+
   return (
     <form id="job-entry-form" onSubmit={handleSubmit}>
       <FieldSet>
@@ -149,7 +163,7 @@ export default function JobEntryForm({
               id="location"
               placeholder="Enter company location here..."
               className="border-2 border-foreground"
-              defaultValue={siteData?.company_website || job?.company_location}
+              defaultValue={siteData?.company_location || job?.company_location}
             />
           </Field>
         </FieldGroup>
@@ -192,28 +206,45 @@ export default function JobEntryForm({
               />
             </Field>
 
-            {status === "applied" && (
-              <Field>
-                <FieldLabel htmlFor="appliedDate">Applied Date</FieldLabel>
-                <Input
-                  type="date"
-                  name="appliedDate"
-                  id="appliedDate"
-                  className="border-2 border-foreground"
-                  defaultValue={
-                    job?.applied_at ? job.applied_at.split("T")[0] : ""
-                  }
-                  required
-                />
-              </Field>
-            )}
-
             <Field>
               <FieldLabel htmlFor="workSetup">Work Setup</FieldLabel>
               <WorkSetupSelect defaultValue={job?.work_setup} />
             </Field>
           </div>
         </FieldGroup>
+
+        {(showAppliedDate || showInterviewDate) && (
+          <FieldGroup>
+            <div className="flex gap-2">
+              {showAppliedDate && (
+                <Field>
+                  <FieldLabel htmlFor="appliedDate">Applied Date</FieldLabel>
+                  <Input
+                    type="datetime-local"
+                    name="appliedDate"
+                    id="appliedDate"
+                    className="border-2 border-foreground"
+                    defaultValue={toDateTimeLocal(job?.applied_at)}
+                    required
+                  />
+                </Field>
+              )}
+              {showInterviewDate && (
+                <Field>
+                  <FieldLabel htmlFor="interviewDate">Interview Date</FieldLabel>
+                  <Input
+                    type="datetime-local"
+                    name="interviewDate"
+                    id="interviewDate"
+                    className="border-2 border-foreground"
+                    defaultValue={toDateTimeLocal(job?.interview_at)}
+                    required
+                  />
+                </Field>
+              )}
+            </div>
+          </FieldGroup>
+        )}
 
         {/* Currency and Salary */}
         <FieldGroup>
@@ -242,6 +273,19 @@ export default function JobEntryForm({
             </Field>
           </div>
         </FieldGroup>
+
+        {/* Job Link */}
+        <Field>
+          <FieldLabel htmlFor="jobLink">Job Post Link</FieldLabel>
+          <Input
+            type="text"
+            name="jobLink"
+            id="jobLink"
+            placeholder="Enter job post link here..."
+            className="border-2 border-foreground"
+            defaultValue={job?.job_link}
+          />
+        </Field>
 
         {/* Job Description */}
         <Field>
@@ -297,19 +341,6 @@ export default function JobEntryForm({
               defaultValue={job?.additional_notes}
             />
           </div>
-        </Field>
-
-        {/* Job Link */}
-        <Field>
-          <FieldLabel htmlFor="jobLink">Job Post Link</FieldLabel>
-          <Input
-            type="text"
-            name="jobLink"
-            id="jobLink"
-            placeholder="Enter job post link here..."
-            className="border-2 border-foreground"
-            defaultValue={job?.job_link}
-          />
         </Field>
 
         {/* Resume */}

@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 export default async function Dashboard() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+  const pageSize = 5;
+
   // 1. Authorize user
   const {
     data: { user },
@@ -19,8 +21,10 @@ export default async function Dashboard() {
   // 2. Fetch job entry data
   const { data, error } = await supabase
     .from("job_entries")
-    .select("id, user_id, status, applied_at")
-    .eq("user_id", user.id);
+    .select(
+      "id, user_id, job_title, company_name, status, applied_at, interview_at",
+    )
+    .eq("user_id", user.id)
 
   if (error) {
     console.error("Failed to fetch data", error);
@@ -31,7 +35,9 @@ export default async function Dashboard() {
   const { data: activityData, error: activityError } = await supabase
     .from("activity_feed")
     .select("*")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .range(0, pageSize - 1);
 
   if (activityError) {
     console.error("Failed to fetch activity data", activityError);

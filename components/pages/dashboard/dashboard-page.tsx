@@ -33,8 +33,11 @@ import { ActivityFeedProps } from "@/lib/types/activity-feed";
 
 type JobEntry = {
   id: string;
+  job_title: string;
+  company_name: string;
   status: "to-apply" | "applied" | "interview" | "offer" | "closed";
   applied_at?: string;
+  interview_at?: string;
 };
 
 type DashboardPageProps = {
@@ -198,9 +201,13 @@ export default function DashboardPage({ data, activityData }: DashboardPageProps
       </section>
 
       <section>
-        <div className="flex md:flex-row flex-col gap-3">
+        <div className="flex md:flex-row flex-col gap-3 max-h-100">
           <ActivityFeed activityData={activityData}/>
-          <InterviewSchedule />
+          <InterviewSchedule
+            jobs={data.filter(
+              (job) => job.status === "interview" && Boolean(job.interview_at),
+            )}
+          />
         </div>
       </section>
     </div>

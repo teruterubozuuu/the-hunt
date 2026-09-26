@@ -18,5 +18,6 @@ export type JobEntry = {
   benefits?: string;
   additional_notes?: string;
   applied_at?: string;
+  interview_at?: string;
   created_at?: string;
 };

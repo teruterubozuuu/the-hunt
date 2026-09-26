@@ -41,14 +41,7 @@ export default function KanbanCard({
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle className="text-sm flex-1/2 line-clamp-2">
-            <Link
-              href={job.job_link}
-              className="hover:underline"
-              target="_blank"
-              title={job.job_link}
-            >
               {job.job_title}
-            </Link>
           </CardTitle>
           <CardDropdownMenu
             job={job}

@@ -101,6 +101,8 @@ export async function PATCH(
       ...(updateData.salary && { salary: Number(updateData.salary) }),
       ...(updateData.jobLink && { job_link: updateData.jobLink }),
       ...(updateData.appliedDate && {applied_at: updateData.appliedDate}),
+      ...(updateData.interviewDate && {interview_at: updateData.interviewDate}),
+      ...(updateData.status === "applied" && {interview_at: null}),
       ...(updateData.benefits && {benefits: updateData.benefits}),
       ...(updateData.additionalNotes && {additional_notes: updateData.additionalNotes}),
       ...(resumePath && { resume: resumePath }),
