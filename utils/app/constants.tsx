@@ -22,13 +22,14 @@ export const menuItem = [
     filled: <ReadCvLogoIcon size={25} weight="fill" />,
     path: "/application-tracker",
   },
+  /*
   {
     id: "profile",
     label: "Profile",
     icon: <UserIcon size={25} />,
     filled: <UserIcon size={25} weight="fill" />,
     path: "/profile",
-  },
+  },*/
 ];
 
 export const workSetup = [

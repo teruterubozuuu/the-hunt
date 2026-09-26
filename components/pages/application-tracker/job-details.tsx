@@ -22,15 +22,24 @@ type JobDetailsProps = {
   job: JobEntry;
   onDelete: (jobId: string) => void;
   onUpdate: (job: JobEntry) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  view?: string;
 };
 
 export default function JobDetails({
   job,
   onDelete,
   onUpdate,
+  open,
+  onOpenChange,
+  view,
 }: JobDetailsProps) {
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+
+  const dialogOpen = open ?? localOpen;
+  const handleOpenChange = onOpenChange ?? setLocalOpen;
 
   useEffect(() => {
     const fetchUrl = async () => {
@@ -56,28 +65,26 @@ export default function JobDetails({
     fetchUrl();
   }, [job.resume]);
 
+  
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger
-        className="bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs"
+        className={view === "kanban" ? "bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs" : "hidden"}
         title="View Details"
       >
         <EyeIcon size={15} />
       </DialogTrigger>
       <DialogContent
-        className="flex flex-col md:border-2 border-foreground md:rounded-lg! rounded-none! md:min-w-250 md:max-h-160 lg:max-h-190 max-h-screen max-w-screen px-5"
+        onClick={(event) => event.stopPropagation()}
+
+        className="fixed! inset-0! top-0! left-0! translate-x-0! translate-y-0! w-screen! max-w-none! h-svh max-h-svh rounded-none! px-5 flex flex-col"
         showCloseButton={false}
       >
         <DialogHeader>
           <div className="flex justify-between items-center">
-            <DialogTitle className="text-lg font-bold" title={job.job_link}>
-              <Link
-                href={job.job_link}
-                className="hover:underline"
-                target="_blank"
-              >
+            <DialogTitle className="text-lg font-bold">
                 {job.job_title}
-              </Link>
             </DialogTitle>
             <div className="flex items-center gap-2">
               <CardDropdownMenu
@@ -87,7 +94,7 @@ export default function JobDetails({
               />
               <Button
                 className="cursor-pointer bg-transparent hover:bg-primary/10 text-primary p-1! rounded-md h-auto!"
-                onClick={() => setOpen(false)}
+                onClick={() => handleOpenChange(false)}
               >
                 <X size={15} />
               </Button>
@@ -128,6 +135,37 @@ export default function JobDetails({
               </p>
             </section>
           </div>
+
+          <section className="flex justify-between">
+            {(job.status === "applied" || job.status === "interview") &&
+              job.applied_at && (
+                <div>
+                  <Label htmlFor="appliedDate" className="font-bold uppercase">
+                    Applied At
+                  </Label>
+                  <time dateTime={job.applied_at} className="text-sm">
+                    {new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(new Date(job.applied_at ?? 0))}
+                  </time>
+                </div>
+              )}
+
+            {job.status === "interview" && job.interview_at && (
+                <div>
+                  <Label htmlFor="interviewDate" className="font-bold uppercase">
+                    Interview At
+                  </Label>
+                  <time dateTime={job.interview_at} className="text-sm">
+                    {new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(new Date(job.interview_at ?? 0))}
+                  </time>
+                </div>
+              )}
+          </section>
 
           <section>
             <Label

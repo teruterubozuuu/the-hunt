@@ -1,0 +1,2 @@
+ALTER TABLE activity_feed
+ADD COLUMN link TEXT NOT NULL;

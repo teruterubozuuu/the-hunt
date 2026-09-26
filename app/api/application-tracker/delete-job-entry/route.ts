@@ -7,10 +7,21 @@ export async function DELETE(req: NextRequest) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Authorize user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+    }
+
     const body = await req.json();
     const { jobId } = body;
-
-    console.log(jobId)
 
     if (!jobId) {
       return NextResponse.json(

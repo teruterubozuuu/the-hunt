@@ -101,6 +101,8 @@ export async function PATCH(
       ...(updateData.salary && { salary: Number(updateData.salary) }),
       ...(updateData.jobLink && { job_link: updateData.jobLink }),
       ...(updateData.appliedDate && {applied_at: updateData.appliedDate}),
+      ...(updateData.interviewDate && {interview_at: updateData.interviewDate}),
+      ...(updateData.status === "applied" && {interview_at: null}),
       ...(updateData.benefits && {benefits: updateData.benefits}),
       ...(updateData.additionalNotes && {additional_notes: updateData.additionalNotes}),
       ...(resumePath && { resume: resumePath }),
@@ -130,6 +132,26 @@ export async function PATCH(
         { status: 500 },
       );
     }
+
+    // Insert to activity feed
+
+    const { error: activityError } = await supabase
+    .from("activity_feed")
+    .insert({
+      user_id: user.id,
+      job_entry_id: id,
+      activity: `Updated entry for ${updateData.jobTitle} at ${updateData.companyName}`,
+      link: `/application-tracker?jobId=${id}`
+    })
+    .select()
+    .single();
+
+    if (activityError){
+      return NextResponse.json(
+        {success:false, message: "Failed to create activity"},
+        {status: 500}
+      )
+    };
 
     return NextResponse.json(
       { jobEntry: jobEntry[0], success: true, message: "Successfully updated entry" },

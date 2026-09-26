@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Loading() {
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-4 w-full">
+    <div className="flex flex-col md:flex-row justify-between gap-2 w-full">
       {Array.from({ length: 5 }).map((_, i) => (
         <Card
           key={i}
