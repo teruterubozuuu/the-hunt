@@ -5,7 +5,7 @@ import UserDropdown from "../sidebar/user-dropdown";
 
 export default function TopMenu() {
   return (
-    <div className="md:hidden fixed top-0 border-b-2 border-foreground w-full p-2">
+    <div className="md:hidden fixed top-0 border-b-2 border-foreground w-full p-2 bg-secondary">
         <div className="flex items-center justify-between">
             <div className="flex gap-2 items-center">
                 <BriefcaseIcon

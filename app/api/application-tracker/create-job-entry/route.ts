@@ -161,10 +161,7 @@ export async function POST(req: NextRequest) {
     .single();
 
     if (activityError){
-      return NextResponse.json(
-        {success:false, message: "Failed to create activity"},
-        {status: 500}
-      )
+      console.error("Failed to create activity", activityError)
     };
 
     return NextResponse.json(

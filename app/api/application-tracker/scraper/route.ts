@@ -82,8 +82,8 @@ FIELD INSTRUCTIONS:
 - location → extract city/country if available
 - company_website → extract official website if mentioned, else ""
 - contact → email or recruiter name if present, else ""
-- job_description → summarize the role clearly (2–4 sentences)
-- job_qualifications → summarize requirements/skills into a paragraph
+- job_description → summarize the role clearly (2–4 sentences), but still provide the bullet points
+- job_qualifications → provide bullet points of skill requirements
 - work_setup → infer:
     remote → if "remote", "work from home"
     hybrid → if mixed

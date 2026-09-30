@@ -17,6 +17,7 @@ import CardDropdownMenu from "./card-dropdown-menu";
 import { EyeIcon, X } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import DOMPurify from "dompurify";
+import { cn } from "@/lib/utils";
 
 type JobDetailsProps = {
   job: JobEntry;
@@ -70,7 +71,7 @@ export default function JobDetails({
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger
-        className={view === "kanban" ? "bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs" : "hidden"}
+        className={cn("bg-primary text-secondary py-1 px-3 rounded-md cursor-pointer hover:bg-primary/70 text-xs" , view === "list" ? "hidden" : "")}
         title="View Details"
       >
         <EyeIcon size={15} />

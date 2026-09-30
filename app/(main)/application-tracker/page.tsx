@@ -22,7 +22,8 @@ export default async function Tracker({searchParams}:{searchParams: Promise<{job
   const { data: jobEntry, error: jobEntryError } = await supabase
     .from("job_entries")
     .select("*")
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .order("created_at", {ascending: false});
 
   if (jobEntryError) {
     console.error("Failed to fetch job entries", jobEntryError);
