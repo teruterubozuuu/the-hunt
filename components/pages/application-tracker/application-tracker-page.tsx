@@ -90,6 +90,11 @@ export default function ApplicationTrackerPage({
     );
   };
 
+  const handleInterviewRequest = (jobId: string) => {
+    setPendingInterview({ jobId });
+    setInterviewAt("");
+  };
+
   const persistStatus = async (
     jobId: string,
     newStatus: JobStatus,
@@ -264,6 +269,8 @@ export default function ApplicationTrackerPage({
           jobs={jobs}
           onDelete={handleEntryDeleted}
           onUpdate={handleEntryUpdated}
+          onStatusChange={persistStatus}
+          onInterviewRequest={handleInterviewRequest}
           items={filteredItems}
           setItems={setItems}
           selectedJobId={selectedJobId}

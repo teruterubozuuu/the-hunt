@@ -33,7 +33,11 @@ type CardDropdownMenuProps = {
   onUpdated: (job: JobEntry) => void;
 };
 
-export default function CardDropdownMenu({ job, onDeleted, onUpdated }: CardDropdownMenuProps) {
+export default function CardDropdownMenu({
+  job,
+  onDeleted,
+  onUpdated,
+}: CardDropdownMenuProps) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const {deleteCard} = useDeleteCard();

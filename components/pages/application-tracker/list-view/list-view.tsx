@@ -1,3 +1,4 @@
+"use client";
 import {
   Accordion,
   AccordionContent,
@@ -9,15 +10,23 @@ import { JobEntry } from "@/lib/types/job-entry";
 import { status } from "@/utils/app/constants";
 import JobDetails from "../job-details";
 import CardDropdownMenu from "../card-dropdown-menu";
-import Link from "next/link";
 import AddJobEntryDialog from "../add-job-entry-dialog";
 import AddJobEntryFromURL from "../add-job-entry-from-url-dialog";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import DOMPurify from "dompurify";
+import { Button } from "@/components/ui/button";
+import { CaretDoubleDownIcon, CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
+import { cn } from "@/lib/utils";
+import { CaretDoubleUpIcon } from "@phosphor-icons/react/dist/ssr";
 
 type ListViewProps = {
   jobs: JobEntry[];
   onUpdate: (jobs: JobEntry) => void;
+  onStatusChange: (
+    jobId: string,
+    newStatus: JobEntry["status"],
+  ) => Promise<boolean>;
+  onInterviewRequest: (jobId: string) => void;
   onDelete: (jobId: string) => void;
   items: JobEntry[];
   setItems: Dispatch<SetStateAction<JobEntry[]>>;
@@ -27,6 +36,8 @@ type ListViewProps = {
 export default function ListView({
   jobs,
   onUpdate,
+  onStatusChange,
+  onInterviewRequest,
   onDelete,
   items,
   setItems,
@@ -37,8 +48,10 @@ export default function ListView({
 
   return (
     <div className="h-screen overflow-y-auto md:pb-20 pb-40">
-      {status.map((stat) => {
+      {status.map((stat, statusIndex) => {
         const filteredJobs = items.filter((job) => job.status === stat.id);
+        const previousStatus = status[statusIndex - 1];
+        const nextStatus = status[statusIndex + 1];
 
         return (
           <Accordion key={stat.id} defaultValue={["applied"]}>
@@ -59,7 +72,8 @@ export default function ListView({
                     <AddJobEntryDialog
                       defaultStatus={stat.id}
                       onJobCreated={(newJob) => {
-                        if (!newJob) {
+                        if (!newJob) return;
+                        if (newJob) {
                           setItems((prev) => [...prev, newJob]);
                         }
                       }}
@@ -67,7 +81,8 @@ export default function ListView({
                     />
                     <AddJobEntryFromURL
                       onJobCreated={(newJob) => {
-                        if (!newJob) {
+                        if (!newJob) return;
+                        if (newJob) {
                           setItems((prev) => [...prev, newJob]);
                         }
                       }}
@@ -91,7 +106,10 @@ export default function ListView({
                         className="flex justify-between items-center"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <p className="font-semibold">{job.job_title}</p>
+                        <p className="truncate min-w-0 font-semibold">
+                          {job.job_title}
+                        </p>
+
                         <CardDropdownMenu
                           job={job}
                           onDeleted={onDelete}
@@ -130,7 +148,7 @@ export default function ListView({
                         />
                       )}
                       <div className="flex justify-between items-center">
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-1 items-center">
                           <Badge>{job.work_setup}</Badge>
                           <Badge
                             className="truncate max-w-23 line-clamp-1"
@@ -139,7 +157,67 @@ export default function ListView({
                             {job.employment_type}
                           </Badge>
                         </div>
+                        <div
+                          className="flex shrink-0 items-center gap-1"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="xs"
+                            className={cn("cursor-pointer hover:bg-muted-foreground/50! px-5 border-2 border-foreground leading-none", !previousStatus ? "hidden" : "")}
+                            title={
+                              previousStatus
+                                ? `Move back to ${previousStatus.type}`
+                                : "Already at the first status"
+                            }
+                            aria-label={
+                              previousStatus
+                                ? `Move back to ${previousStatus.type}`
+                                : "Already at the first status"
+                            }
+                            onClick={() => {
+                              if (previousStatus) {
+                                void onStatusChange(
+                                  job.id,
+                                  previousStatus.id as JobEntry["status"],
+                                );
+                              }
+                            }}
+                          >
+                            <CaretDoubleUpIcon/>
+                          </Button>
+                          <Button
+                            type="button"
+                            size="xs"
+                            className={cn("leading-none cursor-pointer px-5", !nextStatus ? "hidden" : "")}
+                            title={
+                              nextStatus
+                                ? `Move to ${nextStatus.type}`
+                                : "Already at the final status"
+                            }
+                            aria-label={
+                              nextStatus
+                                ? `Move to ${nextStatus.type}`
+                                : "Already at the final status"
+                            }
+                            onClick={() => {
+                              if (!nextStatus) return;
 
+                              if (nextStatus.id === "interview") {
+                                onInterviewRequest(job.id);
+                                return;
+                              }
+
+                              void onStatusChange(
+                                job.id,
+                                nextStatus.id as JobEntry["status"],
+                              );
+                            }}
+                          >
+                            <CaretDoubleDownIcon/>
+                          </Button>
+                        </div>
                         <JobDetails
                           job={job}
                           onDelete={onDelete}

@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
 
 type InterviewJob = {
@@ -20,7 +20,7 @@ export default function InterviewSchedule({ jobs }: { jobs: InterviewJob[] }) {
       <CardHeader>
         <CardTitle>Interview Schedules</CardTitle>
       </CardHeader>
-      <div className="flex flex-col gap-2 p-6 pt-0">
+      <CardContent className="flex flex-col gap-2 p-6 pt-0 overflow-y-auto">
         {sortedJobs.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No interviews scheduled
@@ -29,7 +29,7 @@ export default function InterviewSchedule({ jobs }: { jobs: InterviewJob[] }) {
           sortedJobs.map((job) => (
             <div
               key={job.id}
-              className="border border-foreground rounded-lg p-2"
+              className="border border-foreground rounded-lg py-2"
             >
               <p className="font-semibold">{job.job_title}</p>
               <p className="text-sm text-muted-foreground">
@@ -44,7 +44,7 @@ export default function InterviewSchedule({ jobs }: { jobs: InterviewJob[] }) {
             </div>
           ))
         )}
-      </div>
+      </CardContent>   
     </Card>
   );
 }
