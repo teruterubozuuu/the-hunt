@@ -3,6 +3,10 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const INITIAL_LIMIT = 10;
+const JOB_STATUSES = ["to-apply", "applied", "interview", "offer", "closed"] as const;
+type JobStatus = (typeof JOB_STATUSES)[number];
+
 export default async function Tracker({searchParams}:{searchParams: Promise<{jobId?:string}>}) {
   const {jobId} = await searchParams;
   const cookieStore = await cookies();
@@ -19,16 +23,33 @@ export default async function Tracker({searchParams}:{searchParams: Promise<{job
   }
 
   // 2. Fetch job entries
-  const { data: jobEntry, error: jobEntryError } = await supabase
-    .from("job_entries")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", {ascending: false});
+  const results = await Promise.all(
+    JOB_STATUSES.map((status) =>
+      supabase
+        .from("job_entries")
+        .select("*", { count: "exact" })
+        .eq("user_id", user.id)
+        .eq("status", status)
+        .order("created_at", { ascending: false })
+        .range(0, INITIAL_LIMIT - 1),
+    ),
+  );
+  const jobEntryError = results.find((result) => result.error)?.error;
+  const jobEntry = results.flatMap((result) => result.data ?? []);
+  const totalByStatus = Object.fromEntries(
+    JOB_STATUSES.map((status, index) => [status, results[index].count ?? 0]),
+  ) as Record<JobStatus, number>;
 
   if (jobEntryError) {
     console.error("Failed to fetch job entries", jobEntryError);
     return;
   }
 
-  return <ApplicationTrackerPage jobs={jobEntry} initialJobId={jobId}/>;
+  return (
+    <ApplicationTrackerPage
+      jobs={jobEntry}
+      initialTotalByStatus={totalByStatus}
+      initialJobId={jobId}
+    />
+  );
 }
