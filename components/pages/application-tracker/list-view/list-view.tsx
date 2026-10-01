@@ -12,12 +12,13 @@ import JobDetails from "../job-details";
 import CardDropdownMenu from "../card-dropdown-menu";
 import AddJobEntryDialog from "../add-job-entry-dialog";
 import AddJobEntryFromURL from "../add-job-entry-from-url-dialog";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import DOMPurify from "dompurify";
 import { Button } from "@/components/ui/button";
 import { CaretDoubleDownIcon, CaretDownIcon, CaretUpIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { CaretDoubleUpIcon } from "@phosphor-icons/react/dist/ssr";
+import { toast } from "sonner";
 
 type ListViewProps = {
   jobs: JobEntry[];
@@ -32,6 +33,9 @@ type ListViewProps = {
   setItems: Dispatch<SetStateAction<JobEntry[]>>;
   selectedJobId: string | null;
   onSelectedJobChange: (jobId: string | null) => void;
+  totalByStatus: Record<JobEntry["status"], number>;
+  onJobCreated: (job: JobEntry | null) => void;
+  onLoadMore: (status: JobEntry["status"]) => Promise<void>;
 };
 export default function ListView({
   jobs,
@@ -43,8 +47,13 @@ export default function ListView({
   setItems,
   selectedJobId,
   onSelectedJobChange,
+  totalByStatus,
+  onJobCreated,
+  onLoadMore,
 }: ListViewProps) {
   const view = "list";
+  const [loadingStatus, setLoadingStatus] =
+    useState<JobEntry["status"] | null>(null);
 
   return (
     <div className="h-screen overflow-y-auto md:pb-20 pb-40">
@@ -67,24 +76,20 @@ export default function ListView({
                     onPointerDown={(e) => e.stopPropagation()}
                   >
                     <span className="pr-3 text-muted-foreground">
-                      {filteredJobs.length}
+                      {totalByStatus[stat.id as JobEntry["status"]]}
                     </span>
                     <AddJobEntryDialog
                       defaultStatus={stat.id}
                       onJobCreated={(newJob) => {
                         if (!newJob) return;
-                        if (newJob) {
-                          setItems((prev) => [...prev, newJob]);
-                        }
+                        onJobCreated(newJob);
                       }}
                       view={view}
                     />
                     <AddJobEntryFromURL
                       onJobCreated={(newJob) => {
                         if (!newJob) return;
-                        if (newJob) {
-                          setItems((prev) => [...prev, newJob]);
-                        }
+                        onJobCreated(newJob);
                       }}
                       view={view}
                     />
@@ -95,7 +100,8 @@ export default function ListView({
                 {filteredJobs.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No jobs here</p>
                 ) : (
-                  filteredJobs.map((job) => (
+                  <>
+                    {filteredJobs.map((job) => (
                     <div
                       key={job.id}
                       className="py-2 border-b cursor-pointer hover:bg-muted transition-all"
@@ -230,7 +236,31 @@ export default function ListView({
                         />
                       </div>
                     </div>
-                  ))
+                    ))}
+                  </>
+                )}
+                {totalByStatus[stat.id as JobEntry["status"]] >
+                  filteredJobs.length && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full mt-2 cursor-pointer"
+                    disabled={loadingStatus === stat.id}
+                    onClick={async () => {
+                      const jobStatus = stat.id as JobEntry["status"];
+                      setLoadingStatus(jobStatus);
+                      try {
+                        await onLoadMore(jobStatus);
+                      } catch (error) {
+                        console.error(error);
+                        toast.error("Failed to load more job entries");
+                      } finally {
+                        setLoadingStatus(null);
+                      }
+                    }}
+                  >
+                    {loadingStatus === stat.id ? "Loading..." : "Load more"}
+                  </Button>
                 )}
               </AccordionContent>
             </AccordionItem>

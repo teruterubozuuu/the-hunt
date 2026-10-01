@@ -27,10 +27,12 @@ import { DragEndEvent } from "@dnd-kit/react";
 
 type ApplicationTrackerProps = {
   jobs: JobEntry[];
+  initialTotalByStatus: Record<JobStatus, number>;
   initialJobId?: string;
 };
 
 type JobStatus = JobEntry["status"];
+const PAGE_SIZE = 10;
 
 type PendingInterview = {
   jobId: string;
@@ -38,6 +40,7 @@ type PendingInterview = {
 
 export default function ApplicationTrackerPage({
   jobs,
+  initialTotalByStatus,
   initialJobId,
 }: ApplicationTrackerProps) {
   const isMobile = useIsMobile();
@@ -52,25 +55,63 @@ export default function ApplicationTrackerPage({
     useState<PendingInterview | null>(null);
   const [interviewAt, setInterviewAt] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [totalByStatus, setTotalByStatus] = useState(initialTotalByStatus);
+  const [searchItems, setSearchItems] = useState<JobEntry[] | null>(null);
+  const [searchTotalByStatus, setSearchTotalByStatus] = useState(
+    initialTotalByStatus,
+  );
 
   // Search Query logic
   const normalizedSearch = searchQuery.trim().toLowerCase(); // trims a query's white spaces and converts it to lower case
-  const filteredItems = items.filter((job)=>{
-    if (!normalizedSearch) return true;
+  useEffect(() => {
+    if (!normalizedSearch) {
+      return;
+    }
 
-    return [
-      job.job_title,
-      job.company_name,
-      job.contact,
-      job.company_location,
-      job.employment_type,
-      job.status
-    ]
-    .filter(Boolean)
-    .some((value)=>
-    value!.toLowerCase().includes(normalizedSearch)
-  );
-  })
+    let cancelled = false;
+    const loadSearchResults = async () => {
+      try {
+        const results = await Promise.all(
+          Object.keys(initialTotalByStatus).map(async (jobStatus) => {
+            const response = await fetch(
+              `/api/application-tracker/job-entries?status=${jobStatus}&search=${encodeURIComponent(normalizedSearch)}&offset=0&limit=${PAGE_SIZE}`,
+            );
+            if (!response.ok) throw new Error("Failed to search job entries");
+            return (await response.json()) as {
+              jobs: JobEntry[];
+              hasMore: boolean;
+              total: number;
+              status: JobStatus;
+            };
+          }),
+        );
+
+        if (cancelled) return;
+        const nextItems = results.flatMap((result) => result.jobs);
+        setSearchItems(nextItems);
+        setSearchTotalByStatus(
+          Object.fromEntries(
+            results.map((result) => [result.status, result.total]),
+          ) as Record<JobStatus, number>,
+        );
+      } catch (error) {
+        if (!cancelled) {
+          console.error(error);
+          toast.error("Failed to search job entries");
+        }
+      }
+    };
+
+    void loadSearchResults();
+    return () => {
+      cancelled = true;
+    };
+  }, [normalizedSearch, initialTotalByStatus]);
+
+  const filteredItems = normalizedSearch ? searchItems ?? [] : items;
+  const displayedTotalByStatus = normalizedSearch
+    ? searchTotalByStatus
+    : totalByStatus;
 
   const handleSelectedJobChange = (jobId: string | null) => {
     setSelectedJobId(jobId);
@@ -81,13 +122,69 @@ export default function ApplicationTrackerPage({
   };
 
   const handleEntryDeleted = (jobId: string) => {
+    const deletedJob = items.find((job) => job.id === jobId);
+    if (!deletedJob) return;
+
     setItems((prev) => prev.filter((job) => job.id !== jobId));
+    setTotalByStatus((prev) => ({
+      ...prev,
+      [deletedJob.status]: Math.max(0, prev[deletedJob.status] - 1),
+    }));
   };
 
   const handleEntryUpdated = (updatedJob: JobEntry) => {
+    const previousJob = items.find((job) => job.id === updatedJob.id);
     setItems((prev) =>
       prev.map((job) => (job.id === updatedJob.id ? updatedJob : job)),
     );
+    if (previousJob && previousJob.status !== updatedJob.status) {
+      setTotalByStatus((prev) => ({
+        ...prev,
+        [previousJob.status]: Math.max(0, prev[previousJob.status] - 1),
+        [updatedJob.status]: prev[updatedJob.status] + 1,
+      }));
+    }
+  };
+
+  const loadMore = async (jobStatus: JobStatus) => {
+    const sourceItems = normalizedSearch ? searchItems ?? [] : items;
+    const statusItems = sourceItems.filter((job) => job.status === jobStatus);
+    const searchParam = normalizedSearch
+      ? `&search=${encodeURIComponent(normalizedSearch)}`
+      : "";
+    const response = await fetch(
+      `/api/application-tracker/job-entries?status=${jobStatus}&offset=${statusItems.length}&limit=${PAGE_SIZE}${searchParam}`,
+    );
+
+    if (!response.ok) throw new Error("Failed to load more job entries");
+
+    const data: { jobs: JobEntry[]; hasMore: boolean; total: number } =
+      await response.json();
+    if (normalizedSearch) {
+      setSearchItems((prev) => {
+        const existingIds = new Set((prev ?? []).map((job) => job.id));
+        return [
+          ...(prev ?? []),
+          ...data.jobs.filter((job) => !existingIds.has(job.id)),
+        ];
+      });
+      setSearchTotalByStatus((prev) => ({ ...prev, [jobStatus]: data.total }));
+    } else {
+      setItems((prev) => {
+        const existingIds = new Set(prev.map((job) => job.id));
+        return [...prev, ...data.jobs.filter((job) => !existingIds.has(job.id))];
+      });
+      setTotalByStatus((prev) => ({ ...prev, [jobStatus]: data.total }));
+    }
+  };
+
+  const handleJobCreated = (newJob: JobEntry | null) => {
+    if (!newJob) return;
+    setItems((prev) => [...prev, newJob]);
+    setTotalByStatus((prev) => ({
+      ...prev,
+      [newJob.status]: (prev[newJob.status] ?? 0) + 1,
+    }));
   };
 
   const handleInterviewRequest = (jobId: string) => {
@@ -101,12 +198,21 @@ export default function ApplicationTrackerPage({
     scheduledInterviewAt?: string,
   ) => {
     const prevItems = items;
+    const prevTotals = totalByStatus;
 
+    const currentJob = items.find((job) => job.id === jobId);
     const updatedItems = items.map((job) =>
       job.id === jobId ? { ...job, status: newStatus } : job,
     );
 
     setItems(updatedItems);
+    if (currentJob && currentJob.status !== newStatus) {
+      setTotalByStatus((prev) => ({
+        ...prev,
+        [currentJob.status]: Math.max(0, prev[currentJob.status] - 1),
+        [newStatus]: prev[newStatus] + 1,
+      }));
+    }
 
     try {
       const res = await fetch(
@@ -138,6 +244,7 @@ export default function ApplicationTrackerPage({
       console.error(error);
       toast.error("Failed to update job status");
       setItems(prevItems);
+      setTotalByStatus(prevTotals);
       return false;
     }
   };
@@ -262,6 +369,9 @@ export default function ApplicationTrackerPage({
           setItems={setItems}
           selectedJobId={selectedJobId}
           onSelectedJobChange={handleSelectedJobChange}
+          totalByStatus={displayedTotalByStatus}
+          onJobCreated={handleJobCreated}
+          onLoadMore={loadMore}
         />
       </TabsContent>
       <TabsContent value="list">
@@ -275,6 +385,9 @@ export default function ApplicationTrackerPage({
           setItems={setItems}
           selectedJobId={selectedJobId}
           onSelectedJobChange={handleSelectedJobChange}
+          totalByStatus={displayedTotalByStatus}
+          onJobCreated={handleJobCreated}
+          onLoadMore={loadMore}
         />
       </TabsContent>
     </Tabs>
