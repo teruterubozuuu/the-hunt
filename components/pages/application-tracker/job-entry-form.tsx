@@ -34,8 +34,7 @@ export default function JobEntryForm({
     job?.status ?? defaultStatus,
   );
   const [isLoading, setIsLoading] = useState(false);
-  const showAppliedDate =
-    status === "interview" || (status === "applied" && Boolean(job?.applied_at));
+  const showAppliedDate = status === "applied" || status === "interview";
   const showInterviewDate = status === "interview";
 
   useEffect(() => {
