@@ -11,7 +11,7 @@ import React, { useState } from "react";
 
 type StatusSelectProps = {
   defaultValue?: string;
-  onValueChange?:(value: string) => void;
+  onValueChange?: (value: string) => boolean | void | Promise<boolean | void>;
 };
 
 export default function StatusSelect({ defaultValue, onValueChange }: StatusSelectProps) {
@@ -19,10 +19,13 @@ export default function StatusSelect({ defaultValue, onValueChange }: StatusSele
   
   const [value, setValue] = useState(defaultValue ?? status[0].id);
   
-  const handleValueChange = (newValue: string | null) => {
+  const handleValueChange = async (newValue: string | null) => {
     if (newValue !== null) {
-      setValue(newValue);
-      onValueChange?.(newValue);
+      const shouldCommit = await onValueChange?.(newValue);
+
+      if (shouldCommit !== false) {
+        setValue(newValue);
+      }
     }
   };
 

@@ -134,10 +134,6 @@ export async function PATCH(
 
     if (activityError) {
       console.error("Failed to create activity", activityError);
-      return NextResponse.json(
-        { success: false, message: "Failed to create activity" },
-        { status: 500 },
-      );
     }
 
     return NextResponse.json(
