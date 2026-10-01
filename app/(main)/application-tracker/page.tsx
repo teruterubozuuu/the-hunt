@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 const INITIAL_LIMIT = 10;
 const JOB_STATUSES = ["to-apply", "applied", "interview", "offer", "closed"] as const;
+type JobStatus = (typeof JOB_STATUSES)[number];
 
 export default async function Tracker({searchParams}:{searchParams: Promise<{jobId?:string}>}) {
   const {jobId} = await searchParams;
@@ -37,7 +38,7 @@ export default async function Tracker({searchParams}:{searchParams: Promise<{job
   const jobEntry = results.flatMap((result) => result.data ?? []);
   const totalByStatus = Object.fromEntries(
     JOB_STATUSES.map((status, index) => [status, results[index].count ?? 0]),
-  );
+  ) as Record<JobStatus, number>;
 
   if (jobEntryError) {
     console.error("Failed to fetch job entries", jobEntryError);
